@@ -7,6 +7,9 @@ In the project directory, you can run:
 NodeJs 14.x.x is required
 
 ### Notas Folder Structure
+
+Add this folder structure and any name image files
+
 <pre>
 ...
 notas  
