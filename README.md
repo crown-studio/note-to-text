@@ -8,13 +8,13 @@ NodeJs 14.x.x is required
 
 ### Notas Folder Structure
 ...  
-notas  
-  2021  
-    JAN  
-    FEV  
-      extact-image.jpg  
-    MAR  
-    ...  
-  2022  
-  ...  
+- notas  
+  - 2021  
+    - JAN  
+    - FEV  
+      - extact-image.jpg  
+    - MAR  
+    - ...  
+  - 2022  
+  - ...  
 ...  
