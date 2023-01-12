@@ -1,4 +1,13 @@
-const { getResume, listarEntradas, listarTudo, listarSaidas, listarJuros } = require("./services/postProcessService");
+const { 
+  getResume, 
+  listarEntradas, 
+  listarTudo, 
+  listarSaidas, 
+  listarJuros, 
+  calcularSaidas, 
+  calcularJuros, 
+  calcularEntradas 
+} = require("./services/postProcessService");
 const { recognizeDocuments } = require("./services/tesseractService");
 const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
@@ -88,15 +97,21 @@ const startMenu = async () => {
         break;
       case "2":
         // console.clear();
-        console.log(listarSaidas(listarTudo(filePath, activeDate)));
+        const saidas = listarSaidas(listarTudo(filePath, activeDate))
+        console.log(saidas);
+        console.log('\nTotal de saidas: R$', calcularSaidas(saidas));
         break;
       case "3":
         // console.clear();
-        console.log(listarEntradas(listarTudo(filePath, activeDate)));
+        const entradas = listarEntradas(listarTudo(filePath, activeDate));
+        console.log(entradas);
+        console.log('\nTotal de entradas: R$', calcularEntradas(entradas));
         break;
       case "4":
         // console.clear();
-        console.log(listarJuros(listarTudo(filePath, activeDate)));
+        const juros = listarJuros(listarTudo(filePath, activeDate))
+        console.log(juros);
+        console.log('\nTotal de juros: R$', calcularJuros(juros));
         break;
       case "5":
         // console.clear();
@@ -128,7 +143,7 @@ const startMenu = async () => {
 
     await startMenu();
   } catch (error) {
-    console.log(err);
+    console.log(error);
   }
 };
 
