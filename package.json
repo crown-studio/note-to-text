@@ -1,0 +1,23 @@
+{
+  "name": "tesseract-ocr",
+  "version": "1.0.0",
+  "description": "practice with tesseract ocr framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "orc",
+    "scan",
+    "image"
+  ],
+  "author": "isaac-pj@hotmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "cli-progress": "^3.11.2",
+    "date-fns": "^2.29.3",
+    "jimp": "^0.16.2",
+    "prompt": "^1.3.0",
+    "tesseract.js": "^3.0.3"
+  }
+}
