@@ -1,17 +1,18 @@
-const { 
-  getResume, 
-  listarEntradas, 
-  listarTudo, 
-  listarSaidas, 
-  listarJuros, 
-  calcularSaidas, 
-  calcularJuros, 
-  calcularEntradas 
+const {
+  getResume,
+  listarEntradas,
+  listarTudo,
+  listarSaidas,
+  listarJuros,
+  calcularSaidas,
+  calcularJuros,
+  calcularEntradas,
 } = require("./services/postProcessService");
 const { recognizeDocuments } = require("./services/tesseractService");
 const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
-const { readFile, exists } = require("./services/fileSystemService");
+const { readFile, exists, readFolder } = require("./services/fileSystemService");
+const { extractFromPDF } = require("./services/pdfParseService");
 
 const lang = "por";
 const base = "./notas";
@@ -52,11 +53,18 @@ const getParams = async () => {
   }
 };
 
+const getNota = async (folderPath) => {
+  const [fileName] = readFolder(folderPath).filter((names) => names.includes(`${parseMonth(mes).number} CAIXA_`));
+
+  if (fileName.includes(".pdf")) await extractFromPDF(fileName, folderPath);
+  else await recognizeDocuments(lang, folderPath);
+};
+
 const extractData = async (recognize = false, override = false) => {
   console.clear();
   console.log(`\nEXTRAINDO DADOS: ${mes} ${ano}\n`);
 
-  if (!exists(filePath) || recognize) await recognizeDocuments(lang, folderPath);
+  if (!exists(filePath) || recognize) await getNota(folderPath);
   if (!exists(resultPath) || override) getResume(filePath, resultPath, activeDate);
 
   // console.log(readFile(resultPath));
@@ -96,34 +104,28 @@ const startMenu = async () => {
         extractData(true, true);
         break;
       case "2":
-        // console.clear();
-        const saidas = listarSaidas(listarTudo(filePath, activeDate))
+        const saidas = listarSaidas(listarTudo(filePath, activeDate));
         console.log(saidas);
-        console.log('\nTotal de saidas: R$', calcularSaidas(saidas));
+        console.log(`\nTotal de ${saidas.length} saidas: R$`, calcularSaidas(saidas));
         break;
       case "3":
-        // console.clear();
         const entradas = listarEntradas(listarTudo(filePath, activeDate));
         console.log(entradas);
-        console.log('\nTotal de entradas: R$', calcularEntradas(entradas));
+        console.log(`\nTotal de ${entradas.length} entradas: R$`, calcularEntradas(entradas));
         break;
       case "4":
-        // console.clear();
-        const juros = listarJuros(listarTudo(filePath, activeDate))
+        const juros = listarJuros(listarTudo(filePath, activeDate));
         console.log(juros);
-        console.log('\nTotal de juros: R$', calcularJuros(juros));
+        console.log("\nTotal de juros: R$", calcularJuros(juros));
         break;
       case "5":
-        // console.clear();
         console.log(listarTudo(filePath, activeDate));
         break;
       case "6":
-        // console.clear();
         getResume(filePath, resultPath, activeDate);
         console.log(readFile(resultPath));
         break;
       case "7":
-        // console.clear();
         await getParams();
         await extractData();
         console.log(`\nData alterada para ${parseMonth(mes).name}. de ${ano}`);

@@ -15,7 +15,12 @@ const calcularJuros = (valores) => {
 };
 
 const listarEntradas = (valores) => {
-  return valores.filter(({ id }) => id !== "000000").filter(({ value }) => value > 0);
+  return (
+    valores
+      .filter(({ id }) => id !== "000000")
+      // .filter(({ desc }) => desc !== "DP DIN LOT")
+      .filter(({ value }) => value > 0)
+  );
 };
 
 const calcularEntradas = (valores) => {
