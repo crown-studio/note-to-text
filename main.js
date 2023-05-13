@@ -13,6 +13,7 @@ const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
 const { readFile, exists, readFolder } = require("./services/fileSystemService");
 const { extractFromPDF } = require("./services/pdfParseService");
+const { format, subMonths } = require("date-fns");
 
 const lang = "por";
 const base = "./notas";
@@ -22,6 +23,7 @@ let folderPath = null;
 let filePath = null;
 let resultPath = null;
 let activeDate = null;
+const today = new Date();
 
 const getParams = async () => {
   prompt.start();
@@ -31,8 +33,8 @@ const getParams = async () => {
     console.log("\n\nINFORME A DATA PARA CONSULTA: \n");
     const result = await prompt.get(["ano", "mes"]);
 
-    ano = result.ano;
-    mes = result.mes;
+    ano = result.ano || format(today, "yyyy");
+    mes = result.mes || format(subMonths(today, 1), "MM");
 
     if (!parseMonth(mes)) return getParams();
 
