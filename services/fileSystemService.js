@@ -1,4 +1,7 @@
 const fs = require("fs");
+const fsx = require("fs-extra");
+const jszip = require("jszip");
+const path = require("path");
 
 const readFolder = (folderPath) => {
   return fs.readdirSync(folderPath);
@@ -16,9 +19,34 @@ function exists(src) {
   return fs.existsSync(src);
 }
 
+async function readZip(src) {
+  const data = fs.readFileSync(src);
+  const zip = await jszip.loadAsync(data);
+  const files = Object.values(zip.files).filter((file) => !file.dir);
+  return files;
+}
+
+async function extractZip(filePath, folderName) {
+  const files = await readZip(filePath);
+  const folderPath = path.dirname(filePath);
+
+  await Promise.all(
+    files.map(async (file) => {
+      const content = await file.async("nodebuffer");
+      const fileName = path.basename(file.name);
+      const output = `${folderPath}/${folderName ? folderName + "/" + fileName : file.name}`;
+      await fsx.outputFile(output, content);
+    })
+  ).catch((err) => {
+    console.log(err);
+  });
+}
+
 module.exports = {
   readFolder,
   readFile,
   writeFile,
   exists,
+  readZip,
+  extractZip,
 };

@@ -12,7 +12,7 @@ const { recognizeDocuments } = require("./services/tesseractService");
 const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
 const { readFile, exists, readFolder } = require("./services/fileSystemService");
-const { extractFromPDF } = require("./services/pdfParseService");
+const { extractFromPDF, extractDetails } = require("./services/pdfParseService");
 const { format, subMonths } = require("date-fns");
 
 const lang = "por";
@@ -85,7 +85,8 @@ const printOptions = () => {
   console.log("4 - LISTAR JUROS");
   console.log("5 - LISTAR TRANSAÇÕES");
   console.log("6 - EXIBIR RESUMO");
-  console.log("7 - ALTERAR DATA\n\n");
+  console.log("7 - EXTRAIR DETALHES");
+  console.log("8 - ALTERAR DATA\n\n");
 };
 
 const startMenu = async () => {
@@ -128,6 +129,11 @@ const startMenu = async () => {
         console.log(readFile(resultPath));
         break;
       case "7":
+        extractDetails(folderPath, "UNZIPPED");
+        // getResume(filePath, resultPath, activeDate);
+        // console.log(readFile(resultPath));
+        break;
+      case "8":
         await getParams();
         await extractData();
         console.log(`\nData alterada para ${parseMonth(mes).name}. de ${ano}`);
