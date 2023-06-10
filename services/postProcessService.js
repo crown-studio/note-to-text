@@ -2,6 +2,7 @@ const { isSameMonth, parse } = require("date-fns");
 const { regexMaster } = require("./contants/regexConstants");
 const { readFile, writeFile, exists } = require("./fileSystemService");
 const path = require("path");
+const { currencyParseFloat } = require("../utils/currencyUtils");
 
 const calcularValor = (valores) => {
   return valores.reduce((acc, { value }) => acc + value, 0).toFixed(2);
@@ -15,13 +16,22 @@ const calcularJuros = (valores) => {
   return calcularValor(listarJuros(valores));
 };
 
-const listarEntradas = (valores) => {
-  return (
-    valores
-      .filter(({ id }) => id !== "000000")
-      // .filter(({ desc }) => desc !== "DP DIN LOT")
-      .filter(({ value }) => value > 0)
-  );
+const listarEntradas = (valores, strict) => {
+  const result = valores.filter(({ id }) => id !== "000000").filter(({ value }) => value > 0);
+  if (!strict) return result;
+  return result.filter(({ desc }) => desc !== "DP DIN LOT").filter(({ desc }) => desc !== "CRED PIX");
+};
+
+const listarDepositos = (valores) => {
+  return listarEntradas(valores).filter(({ desc }) => desc === "DP DIN LOT");
+};
+
+const listarCredPix = (valores) => {
+  return listarEntradas(valores).filter(({ desc }) => desc === "CRED PIX");
+};
+
+const listarEnvioPix = (valores) => {
+  return listarSaidas(valores).filter(({ desc }) => desc === "ENVIO PIX");
 };
 
 const calcularEntradas = (valores) => {
@@ -36,10 +46,34 @@ const calcularSaidas = (valores) => {
   return calcularValor(listarSaidas(valores));
 };
 
+const verificarCaixa = (filePath, activeDate) => {
+  const [extract] = readFile(filePath).match(/(?<=HISTÓRICO VALOR\n)(.+\n)+/gm);
+
+  const saldoRgx = /Saldo\s*\r?(.*)/g;
+  const [, initialValue] = saldoRgx.exec(extract);
+  let finalValue = null;
+  while ((match = saldoRgx.exec(extract)) !== null) {
+    finalValue = match[1];
+  }
+
+  const initial = currencyParseFloat(initialValue);
+  const final = currencyParseFloat(finalValue);
+
+  const valores = listarTudo(filePath, activeDate);
+  const saidas = parseFloat(calcularSaidas(valores));
+  const juros = parseFloat(calcularJuros(valores));
+  const entradas = parseFloat(calcularEntradas(valores));
+
+  const result = entradas + juros + saidas + initial;
+
+  return [result === final, initial, final];
+};
+
 const totalDeTransacoes = (valores) => valores?.length;
 
 const listarTudo = (filePath, activeDate) => {
   const folderName = path.dirname(filePath);
+
   if (exists(`${folderName}/data.json`)) {
     const data = require(`.${folderName}/data.json`);
     return data;
@@ -79,19 +113,22 @@ const listarTudo = (filePath, activeDate) => {
 
 const getResume = (pathToRead, pathToSave, activeDate) => {
   const entries = listarTudo(pathToRead, activeDate);
+  const [check, initial, final] = verificarCaixa(pathToRead, activeDate);
 
   // console.log(entries);
 
   writeFile(
     pathToSave,
     `
+    INICIAL:    ${initial}
     JUROS:      ${calcularJuros(entries)}
     ENTRADAS:   ${calcularEntradas(entries)}
     SAIDAS:     ${calcularSaidas(entries)}
-    TOTAL:      ${calcularValor(entries)}
+    BALANÇO:    ${calcularValor(entries)}
+    FINAL:      ${final}
+    
     TRANSAÇÕES: ${totalDeTransacoes(entries)}
-
-    VERIFICADO: FALSE
+    VERIFICADO: ${check ? "TRUE" : "FALSE"}
     `
   );
 };
@@ -105,4 +142,8 @@ module.exports = {
   listarEntradas,
   listarSaidas,
   listarJuros,
+  listarDepositos,
+  listarEnvioPix,
+  listarCredPix,
+  calcularValor,
 };

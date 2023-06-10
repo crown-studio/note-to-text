@@ -7,6 +7,10 @@ const {
   calcularSaidas,
   calcularJuros,
   calcularEntradas,
+  listarDepositos,
+  calcularValor,
+  listarCredPix,
+  listarEnvioPix,
 } = require("./services/postProcessService");
 const { recognizeDocuments } = require("./services/tesseractService");
 const { parseMonth } = require("./utils/dateUtils");
@@ -138,7 +142,17 @@ const startMenu = async () => {
   printOptions();
 
   try {
-    const { OP } = await prompt.get(["OP"]);
+    const schema = {
+      properties: {
+        OP: {
+          pattern: /[0-8]/,
+          message: "Invalid option, check the menu above...",
+          required: true,
+        },
+      },
+    };
+
+    const { OP } = await prompt.get(schema);
 
     printDate();
 
@@ -151,12 +165,20 @@ const startMenu = async () => {
         break;
       case "2":
         const saidas = listarSaidas(listarTudo(filePath, activeDate));
+        const enviopix = listarEnvioPix(saidas);
         console.log(saidas);
+        console.log(`${enviopix.length} PIX: R$`, calcularValor(enviopix));
         console.log(`\nTotal de ${saidas.length} saidas: R$`, calcularSaidas(saidas));
         break;
       case "3":
         const entradas = listarEntradas(listarTudo(filePath, activeDate));
+        const credpix = listarCredPix(entradas);
+        const deposito = listarDepositos(entradas);
+        const outras = listarEntradas(entradas, true);
         console.log(entradas);
+        console.log(`${credpix.length} CREDPIX: R$`, calcularValor(credpix));
+        console.log(`${deposito.length} DEPÓSITOS: R$`, calcularValor(deposito));
+        console.log(`${outras.length} OUTROS: R$`, calcularValor(outras));
         console.log(`\nTotal de ${entradas.length} entradas: R$`, calcularEntradas(entradas));
         break;
       case "4":
@@ -172,7 +194,7 @@ const startMenu = async () => {
         console.log(readFile(resultPath));
         break;
       case "7":
-        await extractDetails(folderPath, "UNZIPPED");
+        await extractDetails(folderPath, "UNZIPPED", true);
         console.log("\nExtraido com sucesso!");
         break;
       case "8":
