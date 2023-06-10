@@ -15,6 +15,7 @@ const { readFile, exists, readFolder, extractZip } = require("./services/fileSys
 const { getImagesFromPDF, getTextFromPDF } = require("./services/pdfParseService");
 const { format, subMonths } = require("date-fns");
 const { OEM } = require("tesseract.js");
+const { writeFile } = require("fs-extra");
 
 const lang = "por";
 const base = "./notas";
@@ -61,6 +62,9 @@ const getNota = async (folderPath) => {
 
   if (fileName.includes(".pdf")) await getTextFromPDF(fileName, folderPath);
   else await recognizeDocuments(folderPath, lang, OEM.TESSERACT_ONLY, "nota.txt");
+
+  const data = JSON.stringify(listarTudo(filePath, activeDate), null, 1);
+  writeFile(`${folderPath}/data.json`, data);
 };
 
 const extractData = async (recognize = false, override = false) => {
@@ -89,7 +93,25 @@ const extractDetails = async (folderPath, output, override = false) => {
       })
   );
 
-  await recognizeDocuments(outputPath, lang);
+  const data = require(`${folderPath}/data.json`);
+  const result = await recognizeDocuments(outputPath, lang);
+
+  result?.forEach((text) => {
+    const descRgx = /Descrição\s*\r?\n(.*)/i;
+    const valueRgx = /Valor\s*\r?\n(.*)/i;
+
+    const [, desc] = descRgx.exec(text);
+    const [, val] = valueRgx.exec(text);
+
+    if (!desc || !val) return;
+    data.forEach(({ value }, index) => {
+      if ((value < 0 ? value * -1 : value) === parseFloat(val.replace(",", "."))) {
+        data[index].msg = desc;
+      }
+    });
+
+    writeFile(`${folderPath}/data.json`, JSON.stringify(data, null, 1));
+  });
 };
 
 const printDate = () => {

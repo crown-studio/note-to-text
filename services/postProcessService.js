@@ -1,6 +1,7 @@
 const { isSameMonth, parse } = require("date-fns");
 const { regexMaster } = require("./contants/regexConstants");
-const { readFile, writeFile } = require("./fileSystemService");
+const { readFile, writeFile, exists } = require("./fileSystemService");
+const path = require("path");
 
 const calcularValor = (valores) => {
   return valores.reduce((acc, { value }) => acc + value, 0).toFixed(2);
@@ -37,8 +38,14 @@ const calcularSaidas = (valores) => {
 
 const totalDeTransacoes = (valores) => valores?.length;
 
-const listarTudo = (path, activeDate) => {
-  const [valores] = readFile(path).match(/(?<=HISTÓRICO VALOR\n)(.+\n)+/gm);
+const listarTudo = (filePath, activeDate) => {
+  const folderName = path.dirname(filePath);
+  if (exists(`${folderName}/data.json`)) {
+    const data = require(`.${folderName}/data.json`);
+    return data;
+  }
+
+  const [valores] = readFile(filePath).match(/(?<=HISTÓRICO VALOR\n)(.+\n)+/gm);
   return (
     valores
       .split("Saldo")

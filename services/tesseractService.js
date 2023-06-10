@@ -51,6 +51,8 @@ const recognizeDocuments = async (folderPath, lang, oem, output) => {
     const fileName = output || filesName[index].replace(".png", ".txt");
     writeFile(`${folderPath}/${fileName}`, text);
   });
+
+  return result;
 };
 
 module.exports = {
