@@ -11,9 +11,10 @@ const {
 const { recognizeDocuments } = require("./services/tesseractService");
 const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
-const { readFile, exists, readFolder } = require("./services/fileSystemService");
-const { extractFromPDF, extractDetails } = require("./services/pdfParseService");
+const { readFile, exists, readFolder, extractZip } = require("./services/fileSystemService");
+const { getImagesFromPDF, getTextFromPDF } = require("./services/pdfParseService");
 const { format, subMonths } = require("date-fns");
+const { OEM } = require("tesseract.js");
 
 const lang = "por";
 const base = "./notas";
@@ -58,8 +59,8 @@ const getParams = async () => {
 const getNota = async (folderPath) => {
   const [fileName] = readFolder(folderPath).filter((names) => names.includes(`${parseMonth(mes).number} CAIXA_`));
 
-  if (fileName.includes(".pdf")) await extractFromPDF(fileName, folderPath);
-  else await recognizeDocuments(lang, folderPath);
+  if (fileName.includes(".pdf")) await getTextFromPDF(fileName, folderPath);
+  else await recognizeDocuments(folderPath, lang, OEM.TESSERACT_ONLY, "nota.txt");
 };
 
 const extractData = async (recognize = false, override = false) => {
@@ -68,8 +69,27 @@ const extractData = async (recognize = false, override = false) => {
 
   if (!exists(filePath) || recognize) await getNota(folderPath);
   if (!exists(resultPath) || override) getResume(filePath, resultPath, activeDate);
+};
 
-  // console.log(readFile(resultPath));
+const extractDetails = async (folderPath, output, override = false) => {
+  const filesName = readFolder(folderPath);
+  const zipFile = filesName.find((name) => name.includes(".zip"));
+  const path = `${folderPath}/${zipFile}`;
+  const outputPath = `${folderPath}/${output}`;
+
+  if (exists(outputPath) && !override) return;
+  await extractZip(path, output);
+
+  const files = readFolder(outputPath);
+  await Promise.all(
+    files
+      .filter((name) => name.includes(".pdf"))
+      .map(async (fileName) => {
+        return getImagesFromPDF(`${outputPath}/${fileName}`, false);
+      })
+  );
+
+  await recognizeDocuments(outputPath, lang);
 };
 
 const printDate = () => {
@@ -104,7 +124,8 @@ const startMenu = async () => {
       case "0":
         process.exit();
       case "1":
-        extractData(true, true);
+        await extractData(true, true);
+        console.log("\nExtraido com sucesso!");
         break;
       case "2":
         const saidas = listarSaidas(listarTudo(filePath, activeDate));
@@ -129,9 +150,8 @@ const startMenu = async () => {
         console.log(readFile(resultPath));
         break;
       case "7":
-        extractDetails(folderPath, "UNZIPPED");
-        // getResume(filePath, resultPath, activeDate);
-        // console.log(readFile(resultPath));
+        await extractDetails(folderPath, "UNZIPPED");
+        console.log("\nExtraido com sucesso!");
         break;
       case "8":
         await getParams();
