@@ -1,7 +1,7 @@
 const cliProgress = require("cli-progress");
 
-const defaultSinglebarOptions = { clearOnComplete: false, format: " {bar} | {filename} | {value}%" };
-const defaultMultibarOptions = { clearOnComplete: false, hideCursor: true, format: " {bar} | {filename} | {value}%" };
+const defaultSinglebarOptions = { clearOnComplete: false, format: " {bar} | {filename} | {percentage}" };
+const defaultMultibarOptions = { clearOnComplete: false, hideCursor: true, format: " {bar} | {filename} | {percentage}" };
 
 const PROGRESS_TYPES = {
   SINGLE: "singlebar",
