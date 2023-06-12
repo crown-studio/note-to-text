@@ -17,7 +17,7 @@ const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
 const { readFile, exists, readFolder, extractZip } = require("./services/fileSystemService");
 const { getImagesFromPDF, getTextFromPDF } = require("./services/pdfParseService");
-const { format, subMonths } = require("date-fns");
+const { format, subMonths, addDays, subDays, isWithinInterval, parseISO, parse } = require("date-fns");
 const { OEM } = require("tesseract.js");
 const { writeFile } = require("fs-extra");
 
@@ -104,15 +104,25 @@ const extractDetails = async (folderPath, output, override = false) => {
   result?.forEach((text) => {
     const descRgx = /Descrição\s*\r?\n(.*)/i;
     const valueRgx = /Valor\s*\r?\n(.*)/i;
+    const dateRgx = /\d{2}\/\d{2}\/\d{4}/i;
 
-    const [, desc] = descRgx.exec(text);
-    const [, val] = valueRgx.exec(text);
+    const [, matchDesc] = descRgx.exec(text);
+    const [, matchValue] = valueRgx.exec(text);
+    const [matchDate] = dateRgx.exec(text);
 
-    if (!desc || !val) return;
-    data.forEach(({ value }, index) => {
-      if ((value < 0 ? value * -1 : value) === parseFloat(val.replace(",", "."))) {
-        data[index].msg = desc;
-      }
+    if (!matchDesc || !matchValue || !matchDate) return;
+
+    const noteDate = parse(matchDate, "dd/MM/yyyy", new Date());
+    const startDate = subDays(noteDate, 2);
+    const endDate = addDays(noteDate, 2);
+
+    data.forEach(({ value, date }, index) => {
+      const parsedValue = parseFloat(matchValue.replace(",", "."));
+      const fixedValue = matchValue.includes("D") ? parsedValue * -1 : parsedValue;
+      const dateToCheck = parseISO(date);
+      const isWithinRange = isWithinInterval(dateToCheck, { start: startDate, end: endDate });
+
+      if (value === fixedValue && isWithinRange) data[index].msg = matchDesc;
     });
 
     writeFile(`${folderPath}/data.json`, JSON.stringify(data, null, 1));
@@ -168,7 +178,7 @@ const startMenu = async () => {
         const saidas = listarSaidas(listarTudo(filePath, activeDate));
         const enviopix = listarEnvioPix(saidas);
         console.log(saidas);
-        console.log(`${enviopix.length} PIX: R$`, calcularValor(enviopix));
+        console.log(`\n${enviopix.length} PIX: R$`, calcularValor(enviopix));
         console.log(`\nTotal de ${saidas.length} saidas: R$`, calcularSaidas(saidas));
         break;
       case "3":
@@ -195,7 +205,7 @@ const startMenu = async () => {
         console.log(readFile(resultPath));
         break;
       case "7":
-        await extractDetails(folderPath, "UNZIPPED", true);
+        await extractDetails(folderPath, "UNZIPPED");
         console.log("\nExtraido com sucesso!");
         break;
       case "8":
