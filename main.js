@@ -12,7 +12,7 @@ const {
   listarCredPix,
   listarEnvioPix,
 } = require("./services/postProcessService");
-const { recognizeDocuments, batchRecognizeDocuments } = require("./services/tesseractService");
+const { recognizeDocuments, recognizeDocumentsBatch } = require("./services/tesseractService");
 const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
 const { readFile, exists, readFolder, extractZip } = require("./services/fileSystemService");
@@ -98,7 +98,7 @@ const extractDetails = async (folderPath, output, override = false) => {
   );
 
   const data = require(`${folderPath}/data.json`);
-  const result = await batchRecognizeDocuments(4, outputPath, lang);
+  const result = await recognizeDocumentsBatch(4, outputPath, lang);
   // const result = await recognizeDocuments(outputPath, lang);
 
   result?.forEach((text) => {

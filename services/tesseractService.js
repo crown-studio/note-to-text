@@ -54,9 +54,8 @@ const recognizeDocuments = async (folderPath, lang, oem, output) => {
 };
 
 const progressUpdate = ({ progress, workerId, jobId, userJobId, status }, controller) => {
-  console.log(workerId, jobId, userJobId);
-  // if (!jobId) return;
-  // controller.updateProgress(userJobId, progress);
+  if (!jobId) return;
+  controller.updateProgress(userJobId, progress);
 };
 
 const generateWorker = async (lang = "eng", oem = OEM.DEFAULT, controller) => {
