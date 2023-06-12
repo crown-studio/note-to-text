@@ -17,7 +17,7 @@ const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
 const { readFile, exists, readFolder, extractZip } = require("./services/fileSystemService");
 const { getImagesFromPDF, getTextFromPDF } = require("./services/pdfParseService");
-const { format, subMonths, addDays, subDays, isWithinInterval, parseISO, parse } = require("date-fns");
+const { format, subMonths, addDays, subDays, isWithinInterval, parse } = require("date-fns");
 const { OEM } = require("tesseract.js");
 const { writeFile } = require("fs-extra");
 
@@ -106,9 +106,9 @@ const extractDetails = async (folderPath, output, override = false) => {
     const valueRgx = /Valor\s*\r?\n(.*)/i;
     const dateRgx = /\d{2}\/\d{2}\/\d{4}/i;
 
-    const [, matchDesc] = descRgx.exec(text);
-    const [, matchValue] = valueRgx.exec(text);
-    const [matchDate] = dateRgx.exec(text);
+    var [, matchDesc] = descRgx.exec(text) || [];
+    var [, matchValue] = valueRgx.exec(text) || [];
+    var [matchDate] = dateRgx.exec(text) || [];
 
     if (!matchDesc || !matchValue || !matchDate) return;
 
@@ -116,12 +116,11 @@ const extractDetails = async (folderPath, output, override = false) => {
     const startDate = subDays(noteDate, 2);
     const endDate = addDays(noteDate, 2);
 
-    data.forEach(({ value, date }, index) => {
+    data?.forEach(({ value, date }, index) => {
       const parsedValue = parseFloat(matchValue.replace(",", "."));
       const fixedValue = matchValue.includes("D") ? parsedValue * -1 : parsedValue;
-      const dateToCheck = parseISO(date);
+      const dateToCheck = parse(date, "dd/MM/yyyy", new Date());
       const isWithinRange = isWithinInterval(dateToCheck, { start: startDate, end: endDate });
-
       if (value === fixedValue && isWithinRange) data[index].msg = matchDesc;
     });
 

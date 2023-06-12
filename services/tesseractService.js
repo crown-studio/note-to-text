@@ -1,6 +1,6 @@
 const Tesseract = require("tesseract.js");
 const { OEM } = require("tesseract.js");
-const { writeFile, readFolder } = require("./fileSystemService");
+const { readFile, writeFile, readFolder, exists } = require("./fileSystemService");
 const { getProgressBar, PROGRESS_TYPES, getProgressController } = require("./progressBarService");
 const { createWorker, createScheduler } = Tesseract;
 const validFormatRgx = /\.bmp|\.jpg|\.jpeg|\.png|\.pbm|\.webp/g;
@@ -9,7 +9,7 @@ const scheduler = createScheduler();
 const saveResult = (result, folderPath, filesName, output) => {
   result?.forEach((text, index) => {
     if (!text) return;
-    const fileName = output || filesName[index].replace(".png", ".txt");
+    const fileName = output || filesName[index].replace(validFormatRgx, ".txt");
     writeFile(`${folderPath}/${fileName}`, text);
   });
 };
@@ -53,7 +53,7 @@ const recognizeDocuments = async (folderPath, lang, oem, output) => {
   return result;
 };
 
-const progressUpdate = ({ progress, workerId, jobId, userJobId, status }, controller) => {
+const progressUpdate = ({ progress, jobId, userJobId, workerId, status }, controller) => {
   if (!jobId) return;
   controller.updateProgress(userJobId, progress);
 };
@@ -77,8 +77,10 @@ const recognizeDocumentsBatch = async (instances, folderPath, lang, oem, output)
 
   const result = await Promise.all(
     filesName.map(async (fileName) => {
-      controller.registerFile(fileName);
       const path = `${folderPath}/${fileName}`;
+      const outputPath = output ? `${folderPath}/${output}` : path.replace(validFormatRgx, ".txt");
+      if (exists(outputPath)) return readFile(outputPath);
+      controller.registerFile(fileName);
       const { data } = await scheduler.addJob("recognize", path);
       return data?.text;
     })
