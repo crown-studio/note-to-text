@@ -72,8 +72,14 @@ const recognizeDocumentsBatch = async (instances, folderPath, lang, oem, output)
   const filesName = readFolder(folderPath).filter((name) => name.match(validFormatRgx));
   const controller = getProgressController();
 
-  const workers = Array(instances).fill(generateWorker(lang, oem, controller));
+  const workers = Array(instances);
+  for (let index = 0; index < instances; index++) {
+    workers[index] = generateWorker(lang, oem, controller);
+  }
   await Promise.all(workers);
+
+  // const workers = Array(instances).fill(generateWorker(lang, oem, controller));
+  // await Promise.all(workers);
 
   const result = await Promise.all(
     filesName.map(async (fileName) => {
@@ -82,14 +88,15 @@ const recognizeDocumentsBatch = async (instances, folderPath, lang, oem, output)
       if (exists(outputPath)) return readFile(outputPath);
       controller.registerFile(fileName);
       const { data } = await scheduler.addJob("recognize", path);
-      return data?.text;
+
+      if (!data?.text) return;
+      writeFile(outputPath, data.text);
+      return data.text;
     })
   );
 
   controller.terminateAll();
   await scheduler.terminate(); // It also terminates all workers.
-
-  saveResult(result, folderPath, filesName, output);
 
   return result;
 };

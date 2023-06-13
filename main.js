@@ -117,8 +117,10 @@ const extractDetails = async (folderPath, output, override = false) => {
     const endDate = addDays(noteDate, 2);
 
     data?.forEach(({ value, date }, index) => {
-      const parsedValue = parseFloat(matchValue.replace(",", "."));
-      const fixedValue = matchValue.includes("D") ? parsedValue * -1 : parsedValue;
+      const parsedValue = parseFloat(matchValue.replace(".", "").replace(",", "."));
+      const checkDebitRgx = /Consulta Pix enviado|pagamento de concessionária|Pagamento de Boleto|Comprovante Boleto/i;
+      const fixedValue = text.match(checkDebitRgx) ? parsedValue * -1 : parsedValue;
+
       const dateToCheck = parse(date, "dd/MM/yyyy", new Date());
       const isWithinRange = isWithinInterval(dateToCheck, { start: startDate, end: endDate });
       if (value === fixedValue && isWithinRange) data[index].msg = matchDesc;
