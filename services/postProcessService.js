@@ -75,8 +75,7 @@ const listarTudo = (filePath, activeDate) => {
   const folderName = path.dirname(filePath);
 
   if (exists(`${folderName}/data.json`)) {
-    const data = require(`.${folderName}/data.json`);
-    return data;
+    return readFile(`${folderName}/data.json`);
   }
 
   const [valores] = readFile(filePath).match(/(?<=HISTÓRICO VALOR\n)(.+\n)+/gm);
@@ -128,7 +127,7 @@ const getResume = (pathToRead, pathToSave, activeDate) => {
     FINAL:      ${final}
     
     TRANSAÇÕES: ${totalDeTransacoes(entries)}
-    VERIFICADO: ${check ? "TRUE" : "FALSE"}
+    VERIFICADO: ${check ? "PASS" : "FAIL"}
     `
   );
 };

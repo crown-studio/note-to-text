@@ -15,11 +15,10 @@ const {
 const { recognizeDocuments, recognizeDocumentsBatch } = require("./services/tesseractService");
 const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
-const { readFile, exists, readFolder, extractZip } = require("./services/fileSystemService");
+const { readFile, writeFile, exists, readFolder, extractZip } = require("./services/fileSystemService");
 const { getImagesFromPDF, getTextFromPDF } = require("./services/pdfParseService");
 const { format, subMonths, addDays, subDays, isWithinInterval, parse } = require("date-fns");
 const { OEM } = require("tesseract.js");
-const { writeFile } = require("fs-extra");
 
 const lang = "por";
 const base = "./notas";
@@ -67,8 +66,8 @@ const getNota = async (folderPath) => {
   if (fileName.includes(".pdf")) await getTextFromPDF(fileName, folderPath);
   else await recognizeDocuments(folderPath, lang, OEM.TESSERACT_ONLY, "nota.txt");
 
-  const data = JSON.stringify(listarTudo(filePath, activeDate), null, 1);
-  writeFile(`${folderPath}/data.json`, data);
+  const data = listarTudo(filePath, activeDate);
+  writeFile(`${folderPath}/data.json`, JSON.stringify(data, null, 1));
 };
 
 const extractData = async (recognize = false, override = false) => {
