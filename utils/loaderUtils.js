@@ -3,13 +3,14 @@ const startDotsLoader = (timer) => {
   let counter = 0;
 
   const loader = setInterval(() => {
-    if (counter > template.length) {
-      counter = 0;
-    } else {
-      counter++;
-    }
     console.clear();
     console.log(template[counter]);
+
+    if (counter < template.length - 1) {
+      counter++;
+    } else {
+      counter = 0;
+    }
   }, timer);
 
   return loader;
@@ -17,6 +18,7 @@ const startDotsLoader = (timer) => {
 
 const stopDotsLoader = (loader) => {
   clearInterval(loader);
+  console.clear();
 };
 
 module.exports = { startDotsLoader, stopDotsLoader };
