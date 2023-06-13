@@ -75,7 +75,7 @@ const listarTudo = (filePath, activeDate) => {
   const folderName = path.dirname(filePath);
 
   if (exists(`${folderName}/data.json`)) {
-    return readFile(`${folderName}/data.json`);
+    return JSON.parse(readFile(`${folderName}/data.json`));
   }
 
   const [valores] = readFile(filePath).match(/(?<=HISTÓRICO VALOR\n)(.+\n)+/gm);
