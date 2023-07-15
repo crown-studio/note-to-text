@@ -64,7 +64,7 @@ const verificarCaixa = (filePath, activeDate) => {
   const juros = parseFloat(calcularJuros(valores));
   const entradas = parseFloat(calcularEntradas(valores));
 
-  const result = entradas + juros + saidas + initial;
+  const result = Number((entradas + juros + saidas + initial).toFixed(2));
 
   return [result === final, initial, final];
 };

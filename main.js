@@ -62,7 +62,7 @@ const getParams = async () => {
 
 const getNota = async (folderPath) => {
   const [fileName] = readFolder(folderPath).filter((names) => names.includes(`${parseMonth(mes).number} CAIXA_`));
-
+  if (!fileName) return console.log("Nota não encontrada!");
   if (fileName.includes(".pdf")) await getTextFromPDF(fileName, folderPath);
   else await recognizeDocuments(folderPath, lang, OEM.TESSERACT_ONLY, "nota.txt");
 
