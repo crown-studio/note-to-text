@@ -89,6 +89,10 @@ const getNota = async (folderPath) => {
   const [fileName] = readFolder(folderPath).filter((names) =>
     names.includes(`${parseMonth(mes).number} CAIXA_`)
   );
+
+  // [BUG] Por alguma razão quando o fileName é falso ainda está quebrando como se não retornasse.
+  // console.log("fileName: ", fileName);
+
   if (!fileName) return console.log("Nota não encontrada!");
   if (fileName.includes(".pdf")) await getTextFromPDF(fileName, folderPath);
   else
@@ -112,10 +116,11 @@ const extractDetails = async (folderPath, output, override = false) => {
   const zipFile = filesName.find((name) => name.includes(".zip"));
   const path = `${folderPath}/${zipFile}`;
   const outputPath = `${folderPath}/${output}`;
+  const hasPreviousFolder = exists(outputPath);
 
-  if (exists(outputPath) && !override) return;
+  if (hasPreviousFolder && !override) return;
+
   await extractZip(path, output);
-
   const files = readFolder(outputPath);
   await Promise.all(
     files
@@ -126,7 +131,16 @@ const extractDetails = async (folderPath, output, override = false) => {
   );
 
   const data = require(`${folderPath}/data.json`);
-  const result = await recognizeDocumentsBatch(4, outputPath, lang);
+
+  const result = hasPreviousFolder
+    ? await Promise.all(
+        files
+          .filter((name) => name.includes(".txt"))
+          .map(async (fileName) => {
+            return readFile(`${outputPath}/${fileName}`);
+          })
+      )
+    : await recognizeDocumentsBatch(4, outputPath, lang);
   // const result = await recognizeDocuments(outputPath, lang);
 
   result?.forEach((text) => {
@@ -146,10 +160,10 @@ const extractDetails = async (folderPath, output, override = false) => {
 
     data?.forEach(({ value, date }, index) => {
       const parsedValue = parseFloat(
-        matchValue.replace(".", "").replace(",", ".")
+        matchValue.replace("R$", "").replace(".", "").replace(",", ".").trim()
       );
       const checkDebitRgx =
-        /Consulta Pix enviado|pagamento de concessionária|Pagamento de Boleto|Comprovante Boleto/i;
+        /Consulta Pix enviado|pagamento de concessionária|Pagamento de Boleto|Comprovante Boleto|Comprovante de Pix enviado|Autorização de Pix/i;
       const fixedValue = text.match(checkDebitRgx)
         ? parsedValue * -1
         : parsedValue;
