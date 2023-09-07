@@ -12,12 +12,31 @@ const {
   listarCredPix,
   listarEnvioPix,
 } = require("./services/postProcessService");
-const { recognizeDocuments, recognizeDocumentsBatch } = require("./services/tesseractService");
+const {
+  recognizeDocuments,
+  recognizeDocumentsBatch,
+} = require("./services/tesseractService");
 const { parseMonth } = require("./utils/dateUtils");
 const prompt = require("prompt");
-const { readFile, writeFile, exists, readFolder, extractZip } = require("./services/fileSystemService");
-const { getImagesFromPDF, getTextFromPDF } = require("./services/pdfParseService");
-const { format, subMonths, addDays, subDays, isWithinInterval, parse } = require("date-fns");
+const {
+  readFile,
+  writeFile,
+  exists,
+  readFolder,
+  extractZip,
+} = require("./services/fileSystemService");
+const {
+  getImagesFromPDF,
+  getTextFromPDF,
+} = require("./services/pdfParseService");
+const {
+  format,
+  subMonths,
+  addDays,
+  subDays,
+  isWithinInterval,
+  parse,
+} = require("date-fns");
 const { OEM } = require("tesseract.js");
 
 const lang = "por";
@@ -45,7 +64,11 @@ const getParams = async () => {
 
     const { confirm } = await prompt.get({
       properties: {
-        confirm: { message: `Consultando dados de ${parseMonth(mes).name}. de ${ano}. Deseja continuar? (Enter) Sim / (N) Não` },
+        confirm: {
+          message: `Consultando dados de ${
+            parseMonth(mes).name
+          }. de ${ano}. Deseja continuar? (Enter) Sim / (N) Não`,
+        },
       },
     });
 
@@ -54,17 +77,22 @@ const getParams = async () => {
     resultPath = `${folderPath}/result.txt`;
     activeDate = new Date(`${parseMonth(mes).number}/01/${ano}`);
 
-    return confirm?.toUpperCase() === "N" ? getParams() : { ano, mes: parseMonth(mes).name };
+    return confirm?.toUpperCase() === "N"
+      ? getParams()
+      : { ano, mes: parseMonth(mes).name };
   } catch (error) {
     console.log(error);
   }
 };
 
 const getNota = async (folderPath) => {
-  const [fileName] = readFolder(folderPath).filter((names) => names.includes(`${parseMonth(mes).number} CAIXA_`));
+  const [fileName] = readFolder(folderPath).filter((names) =>
+    names.includes(`${parseMonth(mes).number} CAIXA_`)
+  );
   if (!fileName) return console.log("Nota não encontrada!");
   if (fileName.includes(".pdf")) await getTextFromPDF(fileName, folderPath);
-  else await recognizeDocuments(folderPath, lang, OEM.TESSERACT_ONLY, "nota.txt");
+  else
+    await recognizeDocuments(folderPath, lang, OEM.TESSERACT_ONLY, "nota.txt");
 
   const data = listarTudo(filePath, activeDate);
   writeFile(`${folderPath}/data.json`, JSON.stringify(data, null, 1));
@@ -75,7 +103,8 @@ const extractData = async (recognize = false, override = false) => {
   console.log(`\nEXTRAINDO DADOS: ${mes} ${ano}\n`);
 
   if (!exists(filePath) || recognize) await getNota(folderPath);
-  if (!exists(resultPath) || override) getResume(filePath, resultPath, activeDate);
+  if (!exists(resultPath) || override)
+    getResume(filePath, resultPath, activeDate);
 };
 
 const extractDetails = async (folderPath, output, override = false) => {
@@ -116,12 +145,20 @@ const extractDetails = async (folderPath, output, override = false) => {
     const endDate = addDays(noteDate, 2);
 
     data?.forEach(({ value, date }, index) => {
-      const parsedValue = parseFloat(matchValue.replace(".", "").replace(",", "."));
-      const checkDebitRgx = /Consulta Pix enviado|pagamento de concessionária|Pagamento de Boleto|Comprovante Boleto/i;
-      const fixedValue = text.match(checkDebitRgx) ? parsedValue * -1 : parsedValue;
+      const parsedValue = parseFloat(
+        matchValue.replace(".", "").replace(",", ".")
+      );
+      const checkDebitRgx =
+        /Consulta Pix enviado|pagamento de concessionária|Pagamento de Boleto|Comprovante Boleto/i;
+      const fixedValue = text.match(checkDebitRgx)
+        ? parsedValue * -1
+        : parsedValue;
 
       const dateToCheck = parse(date, "dd/MM/yyyy", new Date());
-      const isWithinRange = isWithinInterval(dateToCheck, { start: startDate, end: endDate });
+      const isWithinRange = isWithinInterval(dateToCheck, {
+        start: startDate,
+        end: endDate,
+      });
       if (value === fixedValue && isWithinRange) data[index].msg = matchDesc;
     });
 
@@ -179,7 +216,10 @@ const startMenu = async () => {
         const enviopix = listarEnvioPix(saidas);
         console.log(saidas);
         console.log(`\n${enviopix.length} PIX: R$`, calcularValor(enviopix));
-        console.log(`\nTotal de ${saidas.length} saidas: R$`, calcularSaidas(saidas));
+        console.log(
+          `\nTotal de ${saidas.length} saidas: R$`,
+          calcularSaidas(saidas)
+        );
         break;
       case "3":
         const entradas = listarEntradas(listarTudo(filePath, activeDate));
@@ -188,9 +228,15 @@ const startMenu = async () => {
         const outras = listarEntradas(entradas, true);
         console.log(entradas);
         console.log(`${credpix.length} CREDPIX: R$`, calcularValor(credpix));
-        console.log(`${deposito.length} DEPÓSITOS: R$`, calcularValor(deposito));
+        console.log(
+          `${deposito.length} DEPÓSITOS: R$`,
+          calcularValor(deposito)
+        );
         console.log(`${outras.length} OUTROS: R$`, calcularValor(outras));
-        console.log(`\nTotal de ${entradas.length} entradas: R$`, calcularEntradas(entradas));
+        console.log(
+          `\nTotal de ${entradas.length} entradas: R$`,
+          calcularEntradas(entradas)
+        );
         break;
       case "4":
         const juros = listarJuros(listarTudo(filePath, activeDate));
