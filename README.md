@@ -22,4 +22,8 @@ notas
   2022  
   ...  
 ...  
-</pre> 
+</pre>
+
+## Instructions
+
+- mudar encode de arquivos .csv (abrir com bloco de notas e salvar como utf-8)

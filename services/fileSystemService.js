@@ -8,11 +8,11 @@ const readFolder = (folderPath) => {
 };
 
 function readFile(src, encode = "utf-8") {
-  return fs.readFileSync(src, encode);
+  return fs.readFileSync(src, { encoding: encode });
 }
 
-function writeFile(src, value) {
-  fs.writeFileSync(src, value);
+function writeFile(src, value, encode = "utf-8") {
+  fs.writeFileSync(src, value, { encoding: encode });
 }
 
 function exists(src) {
@@ -34,7 +34,9 @@ async function extractZip(filePath, folderName) {
     files.map(async (file) => {
       const content = await file.async("nodebuffer");
       const fileName = path.basename(file.name);
-      const output = `${folderPath}/${folderName ? folderName + "/" + fileName : file.name}`;
+      const output = `${folderPath}/${
+        folderName ? folderName + "/" + fileName : file.name
+      }`;
       await fsx.outputFile(output, content);
     })
   ).catch((err) => {

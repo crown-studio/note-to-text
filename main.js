@@ -39,6 +39,9 @@ const {
 } = require("date-fns");
 const { OEM } = require("tesseract.js");
 
+const { csvToJsonAll, formatCoraCSV } = require("./services/csvService");
+const { ansiToUtf8All } = require("./utils/textUtils");
+
 const lang = "por";
 const base = "./notas";
 let ano = null;
@@ -194,7 +197,10 @@ const printOptions = () => {
   console.log("5 - LISTAR TRANSAÇÕES");
   console.log("6 - EXIBIR RESUMO");
   console.log("7 - EXTRAIR DETALHES");
-  console.log("8 - ALTERAR DATA\n\n");
+  console.log("8 - CSV PARA JSON ");
+  console.log("9 - ANSI TO UTF8");
+  console.log("10 - FORMATAR CORA CSV");
+  console.log("11 - ALTERAR DATA\n\n");
 };
 
 const startMenu = async () => {
@@ -269,6 +275,17 @@ const startMenu = async () => {
         console.log("\nExtraido com sucesso!");
         break;
       case "8":
+        await csvToJsonAll(folderPath);
+        break;
+      case "9":
+        await ansiToUtf8All(folderPath);
+        break;
+      case "10":
+        await formatCoraCSV(`${folderPath}/cora`);
+        console.log("\n\nCSV file successfully processed");
+
+        break;
+      case "11":
         await getParams();
         await extractData();
         console.log(`\nData alterada para ${parseMonth(mes).name}. de ${ano}`);
