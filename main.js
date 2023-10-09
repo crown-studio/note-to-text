@@ -213,7 +213,7 @@ const startMenu = async () => {
     const schema = {
       properties: {
         OP: {
-          pattern: /[0-8]/,
+          pattern: /[0-9]/,
           message: "Invalid option, check the menu above...",
           required: true,
         },
