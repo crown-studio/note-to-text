@@ -4,12 +4,26 @@ const { readFile, writeFile, exists } = require("./fileSystemService");
 const path = require("path");
 const { currencyParseFloat } = require("../utils/currencyUtils");
 
+const getValuesByRegex = (filePath) => {
+  try {
+    // /(?<=HISTÓRICO VALOR\n)(.+\n)+/gm
+    // /(?<=SALDO ANTERIOR\s.+\n)(.+\n)+/gm
+    const [extract] = readFile(filePath).match(/(?<=Extrato\n)(.+\n)+/gm);
+    return extract;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
 const calcularValor = (valores) => {
   return valores.reduce((acc, { value }) => acc + value, 0).toFixed(2);
 };
 
 const listarJuros = (valores) => {
-  return valores.filter(({ id }) => id === "000000").filter(({ value }) => value > 0);
+  return valores
+    .filter(({ id }) => id === "000000")
+    .filter(({ value }) => value > 0);
 };
 
 const calcularJuros = (valores) => {
@@ -17,9 +31,13 @@ const calcularJuros = (valores) => {
 };
 
 const listarEntradas = (valores, strict) => {
-  const result = valores.filter(({ id }) => id !== "000000").filter(({ value }) => value > 0);
+  const result = valores
+    .filter(({ id }) => id !== "000000")
+    .filter(({ value }) => value > 0);
   if (!strict) return result;
-  return result.filter(({ desc }) => desc !== "DP DIN LOT").filter(({ desc }) => desc !== "CRED PIX");
+  return result
+    .filter(({ desc }) => desc !== "DP DIN LOT")
+    .filter(({ desc }) => desc !== "CRED PIX");
 };
 
 const listarDepositos = (valores) => {
@@ -47,7 +65,7 @@ const calcularSaidas = (valores) => {
 };
 
 const verificarCaixa = (filePath, activeDate) => {
-  const [extract] = readFile(filePath).match(/(?<=HISTÓRICO VALOR\n)(.+\n)+/gm);
+  const extract = getValuesByRegex(filePath);
 
   const saldoRgx = /Saldo\s*\r?(.*)/g;
   const [, initialValue] = saldoRgx.exec(extract);
@@ -71,43 +89,61 @@ const verificarCaixa = (filePath, activeDate) => {
 
 const totalDeTransacoes = (valores) => valores?.length;
 
+const hasValidEntry = (parsedDate, id, desc, parsedValue, parsedBalance) => {
+  return !parsedDate ||
+    !id ||
+    !desc ||
+    typeof parsedValue !== "number" ||
+    typeof parsedBalance !== "number"
+    ? false
+    : true;
+};
+
 const listarTudo = (filePath, activeDate) => {
   const folderName = path.dirname(filePath);
 
-  if (exists(`${folderName}/data.json`)) {
+  if (exists(`${folderName}/data.json`))
     return JSON.parse(readFile(`${folderName}/data.json`));
-  }
 
-  const [valores] = readFile(filePath).match(/(?<=HISTÓRICO VALOR\n)(.+\n)+/gm);
-  return (
-    valores
-      .split("Saldo")
-      .filter((v) => v)
-      .map((v) => v.replace("\n", " "))
-      .map((v) => {
-        const [match, date, id, desc, value, type] = v.match(regexMaster) || [];
-        // console.log(match);
-        const parsedValue = parseFloat(value?.replace(".", "")?.replace(",", "."));
-        const parsedDate = date?.replace(/\s/g, "");
+  const valores = getValuesByRegex(filePath);
+  const dados = valores
+    .split("Saldo")
+    .filter((v) => v)
+    .map((v) => v.replace(/\n/g, " "))
+    .map((v) => v.trim())
+    .map((v) => {
+      // const [match, date, id, desc, value, type] = v.match(regexMaster) || []; // V2
+      const [match, balance, typeBalance, desc, date, id, value, type] =
+        v.match(regexMaster) || []; // V3
 
-        if (!parsedDate || !id || !desc || typeof parsedValue !== "number") return null;
+      if (!match) return null;
 
-        return {
-          date: parsedDate,
-          id,
-          desc,
-          value: type === "D" ? parsedValue * -1 : parsedValue,
-        };
-      })
-      // .filter(({ id }) => id)
-      .filter((v) => v)
-      .filter((elem, index, self) => index === self.indexOf(elem))
-      .filter(({ date }) => {
-        if (!activeDate) return true;
-        const [day, month, year] = date.split("/");
-        return isSameMonth(new Date(`${month}/${day}/${year}`), activeDate);
-      })
-  );
+      const parsedBalance = currencyParseFloat(balance || "");
+      const parsedValue = currencyParseFloat(value || "");
+      const parsedDate = date?.replace(/\s/g, "");
+
+      if (hasValidEntry(parsedDate, id, desc, parsedValue, balance))
+        return null;
+
+      return {
+        id,
+        desc,
+        date: parsedDate,
+        balance: typeBalance === "D" ? parsedBalance * -1 : parsedBalance,
+        value: type === "D" ? parsedValue * -1 : parsedValue,
+      };
+    })
+    // .filter(({ id }) => id)
+    .filter((v) => v)
+    .filter((elem, index, self) => index === self.indexOf(elem))
+    .filter(({ date }) => {
+      if (!activeDate) return true;
+      const [day, month, year] = date.split("/");
+      return isSameMonth(new Date(`${month}/${day}/${year}`), activeDate);
+    });
+
+  writeFile(`${folderName}/data.json`, JSON.stringify(dados, null, 1));
+  return dados;
 };
 
 const getResume = (pathToRead, pathToSave, activeDate) => {

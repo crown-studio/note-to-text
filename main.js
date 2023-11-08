@@ -101,8 +101,7 @@ const getNota = async (folderPath) => {
   else
     await recognizeDocuments(folderPath, lang, OEM.TESSERACT_ONLY, "nota.txt");
 
-  const data = listarTudo(filePath, activeDate);
-  writeFile(`${folderPath}/data.json`, JSON.stringify(data, null, 1));
+  listarTudo(filePath, activeDate);
 };
 
 const extractData = async (recognize = false, override = false) => {
