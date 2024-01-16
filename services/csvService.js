@@ -24,7 +24,12 @@ const csvToJson = (inputPath, outputPath) => {
     console.error(err.message);
   });
 
-  const transform = (key, value) => {
+  const transformHeader = (key) => {
+    if (key === "efetivação") return "pagamento";
+    return key;
+  };
+
+  const transformValue = (key, value) => {
     if (key === "Valor" && inputPath.includes("Despesa"))
       return Number(value) * -1;
     if (key === "Valor") return Number(value);
@@ -38,8 +43,8 @@ const csvToJson = (inputPath, outputPath) => {
     const result = rows.map((row) => {
       return Object.fromEntries(
         headers.map((header, index) => [
-          normalize(header),
-          transform(header, row[index]),
+          transformHeader(normalize(header)),
+          transformValue(header, row[index]),
         ])
       );
     });
