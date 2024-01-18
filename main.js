@@ -36,6 +36,8 @@ const {
   subDays,
   isWithinInterval,
   parse,
+  isThisMonth,
+  subYears,
 } = require("date-fns");
 const { OEM } = require("tesseract.js");
 
@@ -59,9 +61,16 @@ const getParams = async () => {
   try {
     console.log("\n\nINFORME A DATA PARA CONSULTA: \n");
     const result = await prompt.get(["ano", "mes"]);
+    const isFirstMonthOfYear = isThisMonth(new Date(2024, 0, 15));
 
-    ano = result.ano || format(today, "yyyy");
-    mes = result.mes || format(subMonths(today, 1), "MM");
+    const defaultYear = isFirstMonthOfYear
+      ? format(subYears(today, 1), "yyyy")
+      : format(today, "yyyy");
+
+    const defaultMonth = format(subMonths(today, 1), "MM");
+
+    ano = result.ano || defaultYear;
+    mes = result.mes || defaultMonth;
 
     if (!parseMonth(mes)) return getParams();
 
