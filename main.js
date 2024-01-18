@@ -39,7 +39,7 @@ const {
 } = require("date-fns");
 const { OEM } = require("tesseract.js");
 
-const { csvToJsonAll, formatCoraCSV } = require("./services/csvService");
+const { csvToJsonMerge, formatCoraCSV } = require("./services/csvService");
 const { ansiToUtf8All } = require("./utils/textUtils");
 
 const lang = "por";
@@ -274,7 +274,8 @@ const startMenu = async () => {
         console.log("\nExtraido com sucesso!");
         break;
       case "8":
-        await csvToJsonAll(folderPath);
+        const { name, number } = parseMonth(mes);
+        await csvToJsonMerge(folderPath, `${number}_${name}`);
         break;
       case "9":
         await ansiToUtf8All(folderPath);

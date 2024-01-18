@@ -1,61 +1,86 @@
 const fs = require("fs");
+const path = require("path");
 const { normalize } = require("../utils/stringUtils");
 const { readFile, readFolder, writeFile } = require("./fileSystemService");
 const { parse } = require("csv");
 const copyPaste = require("copy-paste");
 
-const csvToJson = (inputPath, outputPath) => {
-  const records = [];
+const csvToJson = async (inputPath, outputPath) => {
+  return new Promise((resolve, reject) => {
+    const records = [];
+    const results = [];
 
-  const parser = parse({
-    delimiter: ",",
-    relax_quotes: true,
-    relax_column_count: true,
-  });
-
-  parser.on("readable", function () {
-    let record;
-    while ((record = parser.read()) !== null) {
-      records.push(record);
-    }
-  });
-
-  parser.on("error", function (err) {
-    console.error(err.message);
-  });
-
-  const transformHeader = (key) => {
-    if (key === "efetivação") return "pagamento";
-    return key;
-  };
-
-  const transformValue = (key, value) => {
-    if (key === "Valor" && inputPath.includes("Despesa"))
-      return Number(value) * -1;
-    if (key === "Valor") return Number(value);
-    if (key === "Encargos") return Number(value) * -1;
-    return value;
-  };
-
-  parser.on("end", function () {
-    const [headers, ...rows] = records;
-
-    const result = rows.map((row) => {
-      return Object.fromEntries(
-        headers.map((header, index) => [
-          transformHeader(normalize(header)),
-          transformValue(header, row[index]),
-        ])
-      );
+    const parser = parse({
+      delimiter: ",",
+      relax_quotes: true,
+      relax_column_count: true,
     });
 
-    writeFile(outputPath, `${JSON.stringify(result, null, "\t")}`);
+    parser.on("readable", function () {
+      let record;
+      while ((record = parser.read()) !== null) {
+        records.push(record);
+      }
+    });
 
-    console.log("\n\nFile writed successfully!");
+    parser.on("error", function (err) {
+      console.error(err.message);
+      reject(err);
+    });
+
+    const transformHeader = (key) => {
+      if (key === "efetivacao") return "pagamento";
+      return key;
+    };
+
+    const transformValue = (key, value) => {
+      if (key === "Valor" && inputPath.includes("Despesa"))
+        return Number(value) * -1;
+      if (key === "Valor") return Number(value);
+      if (key === "Encargos") return Number(value) * -1;
+      return value;
+    };
+
+    parser.on("end", function () {
+      const [headers, ...rows] = records;
+
+      const result = rows.map((row) => {
+        return Object.fromEntries(
+          headers.map((header, index) => [
+            transformHeader(normalize(header)),
+            transformValue(header, row[index]),
+          ])
+        );
+      });
+
+      results.push(...result);
+      resolve(results);
+
+      if (!outputPath) return;
+      writeFile(outputPath, `${JSON.stringify(result, null, "\t")}`);
+      console.log("\n\nArquivo escrito com sucesso!");
+    });
+
+    parser.write(readFile(inputPath));
+    parser.end();
   });
+};
 
-  parser.write(readFile(inputPath));
-  parser.end();
+const csvToJsonMerge = async (folderPath, fileName) => {
+  const files = readFolder(folderPath).filter(
+    (fileName) => path.extname(fileName) === ".csv"
+  );
+
+  const data = [];
+
+  for (const file of files) {
+    const filePath = path.join(folderPath, file);
+    data.push(...(await csvToJson(filePath)));
+    // `${folderPath}/temp/${file}`.replace(".csv", ".json") // use as output path if needed
+  }
+
+  writeFile(`${folderPath}/${fileName}.json`, JSON.stringify(data, null, 2));
+  return data;
 };
 
 const csvToJsonAll = async (folderPath) => {
@@ -123,5 +148,6 @@ const formatCoraCSV = async (folderPath) => {
 module.exports = {
   csvToJson,
   csvToJsonAll,
+  csvToJsonMerge,
   formatCoraCSV,
 };
