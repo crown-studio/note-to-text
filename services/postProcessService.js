@@ -4,11 +4,13 @@ const { readFile, writeFile, exists } = require("./fileSystemService");
 const path = require("path");
 const { currencyParseFloat } = require("../utils/currencyUtils");
 
-const getValuesByRegex = (filePath) => {
+const getValuesByRegex = (filePath, regexVersion = 2) => {
   try {
-    // /(?<=HISTÓRICO VALOR\n)(.+\n)+/gm
-    // /(?<=SALDO ANTERIOR\s.+\n)(.+\n)+/gm
-    const [extract] = readFile(filePath).match(/(?<=Extrato\n)(.+\n)+/gm);
+    const Regex1 = /(?<=HISTÓRICO VALOR\n)(.+\n)+/gm;
+    const Regex2 = /(?<=SALDO ANTERIOR\s.+\n)(.+\n)+/gm;
+    const Rexex3 = /(?<=Extrato\n)(.+\n)+/gm;
+    const regex = [Regex1, Regex2, Rexex3][regexVersion - 1];
+    const [extract] = readFile(filePath).match(regex);
     return extract;
   } catch (error) {
     console.log(error);
@@ -112,9 +114,10 @@ const listarTudo = (filePath, activeDate) => {
     .map((v) => v.replace(/\n/g, " "))
     .map((v) => v.trim())
     .map((v) => {
-      // const [match, date, id, desc, value, type] = v.match(regexMaster) || []; // V2
-      const [match, balance, typeBalance, desc, date, id, value, type] =
-        v.match(regexMaster) || []; // V3
+      // const [match, date, id, desc, value, type] = v.match(regexMaster) || []; // V2 ??
+      // const [match, balance, typeBalance, desc, date, id, value, type] = v.match(regexMaster) || []; // V3 PRINT SCROLL
+      const [match, balance, typeBalance, date, id, desc, value, type] =
+        v.match(regexMaster) || []; // V4 PDF
 
       if (!match) return null;
 
