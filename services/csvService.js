@@ -1,9 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 const { normalize } = require("../utils/stringUtils");
-const { readFile, readFolder, writeFile } = require("./fileSystemService");
+const {
+  readFile,
+  readFolder,
+  writeFile,
+  copyText,
+} = require("./fileSystemService");
 const { parse } = require("csv");
-const copyPaste = require("copy-paste");
 
 const csvToJson = async (inputPath, outputPath) => {
   return new Promise((resolve, reject) => {
@@ -137,10 +141,7 @@ const formatCoraCSV = async (folderPath) => {
         .map((row) => Object.values(row).join(","))
         .join("\n");
 
-      copyPaste.copy(csvString, () => {
-        console.log("Text copied to clipboard");
-      });
-
+      copyText(csvString);
       // console.log(formattedData);
     });
 };

@@ -2,6 +2,7 @@ const fs = require("fs");
 const fsx = require("fs-extra");
 const jszip = require("jszip");
 const path = require("path");
+const copyPaste = require("copy-paste");
 
 const readFolder = (folderPath) => {
   return fs.readdirSync(folderPath);
@@ -44,6 +45,13 @@ async function extractZip(filePath, folderName) {
   });
 }
 
+function copyText(text, message = "Text copied to clipboard") {
+  if (!text || typeof text !== "string") return;
+  copyPaste.copy(text, () => {
+    console.info(message);
+  });
+}
+
 module.exports = {
   readFolder,
   readFile,
@@ -51,4 +59,5 @@ module.exports = {
   exists,
   readZip,
   extractZip,
+  copyText,
 };

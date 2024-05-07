@@ -24,6 +24,7 @@ const {
   exists,
   readFolder,
   extractZip,
+  copyText,
 } = require("./services/fileSystemService");
 const {
   getImagesFromPDF,
@@ -208,7 +209,8 @@ const printOptions = () => {
   console.log("8 - CSV PARA JSON ");
   console.log("9 - ANSI TO UTF8");
   console.log("10 - FORMATAR CORA CSV");
-  console.log("11 - ALTERAR DATA\n\n");
+  console.log("11 - ALTERAR DATA");
+  console.log("12 - SCRIPT CAIXA\n\n");
 };
 
 const startMenu = async () => {
@@ -292,12 +294,18 @@ const startMenu = async () => {
       case "10":
         await formatCoraCSV(`${folderPath}/cora`);
         console.log("\n\nCSV file successfully processed");
-
         break;
       case "11":
         await getParams();
         await extractData();
         console.log(`\nData alterada para ${parseMonth(mes).name}. de ${ano}`);
+        break;
+      case "12":
+        const script = readFile("./scripts/importPixCaixaWeb.js");
+        copyText(script, "Script successfully copied!");
+        console.log(
+          "\n\nExecute o script em https://gerenciador.caixa.gov.br/empresa/dashboard/pix/extrato"
+        );
         break;
 
       default:
