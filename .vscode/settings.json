@@ -19,5 +19,8 @@
     "titleBar.inactiveForeground": "#e7e7e799",
     "activityBar.activeBorder": "#155e02"
   },
-  "peacock.color": "#dd0531"
+  "peacock.color": "#dd0531",
+  "osfdigital.wingman.workspaceIndexingSettings": {
+    "indexingState": 0
+  }
 }
