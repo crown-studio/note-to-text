@@ -25,6 +25,7 @@ const {
   readFolder,
   extractZip,
   copyText,
+  createFolder,
 } = require("./services/fileSystemService");
 const {
   getImagesFromPDF,
@@ -44,6 +45,7 @@ const { OEM } = require("tesseract.js");
 
 const { csvToJsonMerge, formatCoraCSV } = require("./services/csvService");
 const { ansiToUtf8All } = require("./utils/textUtils");
+const { CSV_HEADER_TEMPLATE } = require("./constants/general");
 
 const lang = "por";
 const base = "./notas";
@@ -51,6 +53,8 @@ let ano = null;
 let mes = null;
 let folderPath = null;
 let filePath = null;
+let importsFolderPath = null;
+let coraFolderPath = null;
 let resultPath = null;
 let activeDate = null;
 const today = new Date();
@@ -88,6 +92,8 @@ const getParams = async () => {
     folderPath = `${base}/${ano}/${parseMonth(mes).name}`;
     filePath = `${folderPath}/nota.txt`;
     resultPath = `${folderPath}/result.txt`;
+    importsFolderPath = `${folderPath}/imports`;
+    coraFolderPath = `${folderPath}/cora`;
     activeDate = new Date(`${parseMonth(mes).number}/01/${ano}`);
 
     return confirm?.toUpperCase() === "N"
@@ -121,6 +127,14 @@ const extractData = async (recognize = false, override = false) => {
   if (!exists(filePath) || recognize) await getNota(folderPath);
   if (!exists(resultPath) || override)
     getResume(filePath, resultPath, activeDate);
+
+  createFolder(coraFolderPath);
+  if (exists(importsFolderPath)) return;
+  createFolder(importsFolderPath);
+  const shortMonth = parseMonth(mes).name;
+  const folderPath = importsFolderPath;
+  writeFile(`${folderPath}/${shortMonth}_RECE_IMPORT.csv`, CSV_HEADER_TEMPLATE);
+  writeFile(`${folderPath}/${shortMonth}_DESP_IMPORT.csv`, CSV_HEADER_TEMPLATE);
 };
 
 const extractDetails = async (folderPath, output, override = false) => {
