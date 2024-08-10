@@ -52,10 +52,16 @@ function copyText(text, message = "Text copied to clipboard") {
   });
 }
 
+const createFolder = (folderPath) => {
+  if (exists(folderPath)) return;
+  fs.mkdirSync(folderPath, { recursive: true });
+};
+
 module.exports = {
   readFolder,
   readFile,
   writeFile,
+  createFolder,
   exists,
   readZip,
   extractZip,
