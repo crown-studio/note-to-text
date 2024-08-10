@@ -8,6 +8,7 @@ const {
   copyText,
 } = require("./fileSystemService");
 const { parse } = require("csv");
+const { CSV_HEADER_TEMPLATE } = require("../constants/general");
 
 const csvToJson = async (inputPath, outputPath) => {
   return new Promise((resolve, reject) => {
@@ -103,7 +104,7 @@ const csvToJsonAll = async (folderPath) => {
   }
 };
 
-const formatCoraCSV = async (folderPath) => {
+const formatCoraCSV = async (folderPath, outputPath) => {
   const [csvFileName] = readFolder(folderPath).filter((fileName) =>
     fileName.includes(".csv")
   );
@@ -137,11 +138,20 @@ const formatCoraCSV = async (folderPath) => {
         row.Observações.includes("DÉBITO")
       );
 
-      const csvString = [...receitas, ...despesas]
-        .map((row) => Object.values(row).join(","))
-        .join("\n");
+      const toCSV = (arr) => {
+        return arr.map((row) => Object.values(row).join(",")).join("\n");
+      };
 
-      copyText(csvString);
+      if (!outputPath) return copyText(toCSV([...receitas, ...despesas]));
+
+      writeFile(
+        `${outputPath}_RECE_IMPORT.csv`,
+        `${CSV_HEADER_TEMPLATE}${toCSV(receitas)}`
+      );
+      writeFile(
+        `${outputPath}_DESP_IMPORT.csv`,
+        `${CSV_HEADER_TEMPLATE}${toCSV(despesas)}`
+      );
       // console.log(formattedData);
     });
 };

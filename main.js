@@ -54,7 +54,10 @@ let mes = null;
 let folderPath = null;
 let filePath = null;
 let importsFolderPath = null;
+let importsRecePath = null;
+let importsDespPath = null;
 let coraFolderPath = null;
+let shortMonth = null;
 let resultPath = null;
 let activeDate = null;
 const today = new Date();
@@ -95,6 +98,9 @@ const getParams = async () => {
     importsFolderPath = `${folderPath}/imports`;
     coraFolderPath = `${folderPath}/cora`;
     activeDate = new Date(`${parseMonth(mes).number}/01/${ano}`);
+    shortMonth = parseMonth(mes).name;
+    importsRecePath = `${importsFolderPath}/${shortMonth}_RECE_IMPORT.csv`;
+    importsDespPath = `${importsFolderPath}/${shortMonth}_DESP_IMPORT.csv`;
 
     return confirm?.toUpperCase() === "N"
       ? getParams()
@@ -131,10 +137,8 @@ const extractData = async (recognize = false, override = false) => {
   createFolder(coraFolderPath);
   if (exists(importsFolderPath)) return;
   createFolder(importsFolderPath);
-  const shortMonth = parseMonth(mes).name;
-  const folderPath = importsFolderPath;
-  writeFile(`${folderPath}/${shortMonth}_RECE_IMPORT.csv`, CSV_HEADER_TEMPLATE);
-  writeFile(`${folderPath}/${shortMonth}_DESP_IMPORT.csv`, CSV_HEADER_TEMPLATE);
+  writeFile(importsRecePath, CSV_HEADER_TEMPLATE);
+  writeFile(importsDespPath, CSV_HEADER_TEMPLATE);
 };
 
 const extractDetails = async (folderPath, output, override = false) => {
@@ -306,7 +310,10 @@ const startMenu = async () => {
         await ansiToUtf8All(folderPath);
         break;
       case "10":
-        await formatCoraCSV(`${folderPath}/cora`);
+        await formatCoraCSV(
+          `${folderPath}/cora`,
+          `${importsFolderPath}/${shortMonth}`
+        );
         console.log("\n\nCSV file successfully processed");
         break;
       case "11":
