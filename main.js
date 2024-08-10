@@ -43,9 +43,14 @@ const {
 } = require("date-fns");
 const { OEM } = require("tesseract.js");
 
-const { csvToJsonMerge, formatCoraCSV } = require("./services/csvService");
+const {
+  csvToJsonMerge,
+  formatCoraCSV,
+  formatCaixaCSV,
+} = require("./services/csvService");
 const { ansiToUtf8All } = require("./utils/textUtils");
 const { CSV_HEADER_TEMPLATE } = require("./constants/general");
+const { folderBack } = require("./utils/generalUtils");
 
 const lang = "por";
 const base = "./notas";
@@ -224,11 +229,12 @@ const printOptions = () => {
   console.log("5 - LISTAR TRANSAÇÕES");
   console.log("6 - EXIBIR RESUMO");
   console.log("7 - EXTRAIR DETALHES");
-  console.log("8 - CSV PARA JSON ");
+  console.log("8 - CSV PARA JSON");
   console.log("9 - ANSI TO UTF8");
   console.log("10 - FORMATAR CORA CSV");
   console.log("11 - ALTERAR DATA");
-  console.log("12 - SCRIPT CAIXA\n\n");
+  console.log("12 - SCRIPT CAIXA");
+  console.log("13 - FORMATAR CAIXA CSV\n\n");
 };
 
 const startMenu = async () => {
@@ -312,7 +318,7 @@ const startMenu = async () => {
       case "10":
         await formatCoraCSV(
           `${folderPath}/cora`,
-          `${importsFolderPath}/${shortMonth}`
+          `${folderBack(importsFolderPath)}/${shortMonth}`
         );
         console.log("\n\nCSV file successfully processed");
         break;
@@ -327,6 +333,14 @@ const startMenu = async () => {
         console.log(
           "\n\nExecute o script em https://gerenciador.caixa.gov.br/empresa/dashboard/pix/extrato"
         );
+        break;
+
+      case "13":
+        await formatCaixaCSV(
+          `${folderBack(folderPath)}/data.json`,
+          `${folderBack(importsFolderPath)}/${shortMonth}`
+        );
+        console.log("\n\nCSV file successfully processed");
         break;
 
       default:

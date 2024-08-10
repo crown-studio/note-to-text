@@ -6,6 +6,11 @@ const waitFor = (msec) => {
   });
 };
 
+const folderBack = (path, levels = 1) => {
+  return path.replace("./", new Array(levels).fill("../").join(""));
+};
+
 module.exports = {
   waitFor,
+  folderBack,
 };

@@ -16,6 +16,14 @@ function writeFile(src, value, encode = "utf-8") {
   fs.writeFileSync(src, value, { encoding: encode });
 }
 
+function appendFile(src, value, encode = "utf-8") {
+  const filePath = path.resolve(__dirname, src);
+  if (!exists(filePath)) return;
+  const fd = fs.openSync(filePath, "a");
+  fs.writeFileSync(fd, value, { encoding: encode });
+  fs.closeSync(fd);
+}
+
 function exists(src) {
   return fs.existsSync(src);
 }
@@ -61,6 +69,7 @@ module.exports = {
   readFolder,
   readFile,
   writeFile,
+  appendFile,
   createFolder,
   exists,
   readZip,

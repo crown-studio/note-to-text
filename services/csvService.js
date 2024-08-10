@@ -6,6 +6,7 @@ const {
   readFolder,
   writeFile,
   copyText,
+  appendFile,
 } = require("./fileSystemService");
 const { parse } = require("csv");
 const { CSV_HEADER_TEMPLATE } = require("../constants/general");
@@ -144,16 +145,92 @@ const formatCoraCSV = async (folderPath, outputPath) => {
 
       if (!outputPath) return copyText(toCSV([...receitas, ...despesas]));
 
-      writeFile(
+      appendFile(
         `${outputPath}_RECE_IMPORT.csv`,
         `${CSV_HEADER_TEMPLATE}${toCSV(receitas)}`
       );
-      writeFile(
+      appendFile(
         `${outputPath}_DESP_IMPORT.csv`,
         `${CSV_HEADER_TEMPLATE}${toCSV(despesas)}`
       );
-      // console.log(formattedData);
     });
+};
+
+const formatCaixaCSV = async (dataPath = "./data.json", outputPath) => {
+  function getCSV(filter) {
+    const FILTROS = {
+      ENTRADA: "Recebido",
+      SAIDA: "Enviado",
+    };
+
+    const getValues = () => {
+      try {
+        const data = require(dataPath);
+        console.log("Data read successfully!");
+
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const getLocalInfo = ({ date, value, msg, ...rest }) => {
+      const dest = "Destino";
+      const orig = "Origem";
+      const desc = msg || rest.desc;
+
+      return { dest, orig, date, value, desc };
+    };
+
+    const formatValue = (value) => {
+      if (typeof value === "number") return value;
+      return parseFloat(
+        value
+          .replace("R$", "")
+          .replace(/[\.\s]/g, "")
+          .replace(",", ".")
+      );
+    };
+
+    const formatDate = (value) => value.slice(0, 10);
+
+    const formatName = (value) => {
+      return value
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    };
+
+    const format = (arr) => {
+      return arr
+        .filter((data) => {
+          return (
+            (filter === FILTROS.SAIDA && data.value < 0) ||
+            (filter === FILTROS.ENTRADA && data.value > 0)
+          );
+        })
+        .reduce(
+          (csv, { orig, date, value, desc }) =>
+            csv.concat(
+              `${formatName(orig)},${formatValue(value)},${formatDate(
+                date
+              )},Dízimo,Outros,Caixa Econômica Federal,,** @import ?? ** ${desc},\n`
+            ),
+          "Descrição,Valor,Vencimento,Categoria,Subcategoria,Conta,Cartão,Observações\n"
+        );
+    };
+
+    return format(getValues().map(getLocalInfo));
+  }
+
+  const despesas = getCSV("Enviado");
+  const receitas = getCSV("Recebido");
+
+  if (!outputPath) return copyText(`${receitas}\n\n${despesas}`);
+
+  appendFile(`${outputPath}_RECE_IMPORT.csv`, `\n\n${receitas}`);
+  appendFile(`${outputPath}_DESP_IMPORT.csv`, `\n\n${despesas}`);
 };
 
 module.exports = {
@@ -161,4 +238,5 @@ module.exports = {
   csvToJsonAll,
   csvToJsonMerge,
   formatCoraCSV,
+  formatCaixaCSV,
 };
