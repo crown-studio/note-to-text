@@ -1338,7 +1338,7 @@ const people = [
     phone: null,
   },
   {
-    accountNames: [],
+    accountNames: ["Marcos Gleidson Sousa Santos"],
     name: {
       fullname: "Marcos",
       simplename: "Marcos Sousa",
