@@ -129,7 +129,19 @@ async function getCSV(limit, filter) {
     : format((await getElements()).map(getOnlineInfo));
 }
 
-const despesas = await getCSV(null, "Enviado");
-const receitas = await getCSV(null, "Recebido");
+const despesas = getCSV(null, "Enviado");
+const receitas = getCSV(null, "Recebido");
 
-console.log(despesas, receitas);
+Promise.all([despesas, receitas]).then((values) => {
+  const [despesas, receitas] = values;
+
+  // Copia o resultado para a área de transferência
+  const tempInput = document.createElement("input");
+  tempInput.value = `${despesas}\n${receitas}`;
+  document.body.appendChild(tempInput);
+  tempInput.select();
+  document.execCommand("copy");
+  document.body.removeChild(tempInput);
+
+  console.log(despesas, receitas);
+});
