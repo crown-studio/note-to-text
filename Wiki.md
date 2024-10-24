@@ -1,12 +1,15 @@
 <!-- Etapas do processo -->
 
+Parei o relatório de Agosto no passo 2.4
+
 1. Preparação
    - Baixar csv e pdf do banco cora no email para a pasta /cora dentro de note-to-text/notas/<ano>/<MES>/cora
-   - Executar o Tesouraria CMD e parsear os dados do csv cora com a opção 10 do menu (necessário o Node 14.18.1)
+   - Exportar o extrato em pdf do app da Caixa Econômica para o Google Drive na pasta Extratos, com o formato 08 CAIXA: AGOSTO.pdf e para adicionar na pasta note-to-text/notas/<ano>/<MES>
+   - Executar o Tesouraria CMD e parsear os dados do csv cora com a opção 10 do menu e parse da caixa com a opção 13 (necessário o Node 14.18.1)
    - Inserir dados do caixa Carteira manualmente no arquivo de import em note-to-text/notas/<ano>/<MES>/imports
 2. Preenchimento
    - Preparar CSVs de import dos caixas usando o Edit csv no vscode
-   - Receitas: Ajustar nomes, juntar casais e ajustar categorias
+   - Receitas: Ajustar nomes, juntar casais e ajustar categorias e subcategorias
    - Despesas: Remover as despesas fixas e registrar no app descrição, observações, categorias e tags
    - Usar a IA para adicionar as categorias nas despesas com o prompt em anexo
 3. Importação
@@ -17,7 +20,7 @@
 4. Publicação
    - Baixar os arquivos receitas e despesas .csv e colocar na pasta /note-to-text/notas/<ano>/<MES>/
    - Converter os arquivos receitas e despesas .csv para JSON usando a opção (8 CSV to JSON) no Tesouraria CMD e adicionar o \_2024
-   - Importar o arquivo JSON do mês para o database do relatorio usando o script `npm run append dd_MMM_yyyy.json` no `/finance-report`
+   - Importar o arquivo JSON do mês para o database do relatorio usando o script `npm run append dd_MMM_yyyy` no `/finance-report`
    - Testar o relatorio localmente `npm start`, publicar no github pages usando `npm run deploy`.
 5. Backup
    - Printar usando a extensão do chrome GoFullPage com zoom da página em 150%
@@ -104,6 +107,7 @@ ok - Integrar o código do script da Caixa no cmd
 - Fazer o número 8 no script copiar o comando de append com nome do arquivo
 - Adicionar uma função de higienizar para fazer trim nas obserações e remover ?? da descrição
 - Juntar os dois repos com cli e front abrim no mesmo workspace integrando as funcionalidades do cli no front
+- verificar se o arquivo SET_RECE_IMPORT.csv existe antes de fazer o append, do contrário avisar
 
 Subpassos para automatizar no passo 5
 
