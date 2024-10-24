@@ -203,7 +203,26 @@ const formatCaixaCSV = async (dataPath = "./data.json", outputPath) => {
     };
 
     const format = (arr) => {
-      return arr
+      const juros = arr
+        .filter(
+          ({ desc }) =>
+            desc.includes("REM BASICA") || desc.includes("CRED JUROS")
+        )
+        .reduce(
+          (acc, crr) => ({
+            ...crr,
+            desc: "Rendimento",
+            value: Math.round(((acc.value || 0) + crr.value) * 100) / 100,
+          }),
+          {}
+        );
+
+      const outros = arr.filter(
+        ({ desc }) =>
+          !desc.includes("REM BASICA") && !desc.includes("CRED JUROS")
+      );
+
+      return [...outros, juros]
         .filter((data) => {
           return (
             (filter === FILTROS.SAIDA && data.value < 0) ||
