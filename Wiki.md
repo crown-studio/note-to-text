@@ -27,7 +27,7 @@ Parei o relatório de Agosto no passo 2.4
    - baixar o PDF e adicionar na pasta D:/Pessoal/Projects/Tesouraria/archive
    - enviar no whatsapp no grupo IBR | Relatório Financeiro
 
-<!--
+## Prompt para categorias
 
 Prompt para adicionar categorias nas despesas
 
@@ -36,16 +36,16 @@ Estou trabalhando em um relatório financeiro e preciso categorizar uma lista de
 Considere o objeto JSON abaixo como um guia para as categorias e subcategorias. Cada chave no objeto abaixo é uma categoria e os itens no array são as subcategorias. Obs: Ignore os caracteres de interrogação na sua análise, eles servem apenas para controle e não fazem parte da descrição'em si.
 
 {
-  'Ajuda Social': ['Alimentação', 'Outros', 'Saúde', 'Transporte'],
-  Alimentação: ['Adultos', 'Comunhão', 'Crianças', 'Eventos', 'Jovens', 'Outros', 'Trabalhadores'],
-  Eventos: ['Batismo', 'Dia das Mães', 'Dia do Pastor', 'Dia dos Pais', 'Outros'],
-  Manutenção: ['Descartáveis', 'Limpeza', 'Outros', 'Papelaria', 'Utilidades'],
-  Missões: ['Igreja', 'Outros', 'Pessoal', 'Projeto', 'Sustento'],
-  Obras: ['Construção', 'Ferramentas', 'Material', 'Outros', 'Reforma', 'Reparos', 'Serviço', 'Outros'],
-  Outros: ['Outros'],
-  Pagamentos: ['Aluguel', 'Impostos', 'Outros', 'Salário', 'Taxas'],
-  Serviços: ['Contabilidade', 'Energia', 'Gás', 'Impressão', 'Outros', 'Água', 'Água Mineral'],
-  Transporte: ['Combustível', 'Manutenção', 'Outros', 'Taxi', 'Passagem'],
+'Ajuda Social': ['Alimentação', 'Outros', 'Saúde', 'Transporte'],
+Alimentação: ['Adultos', 'Comunhão', 'Crianças', 'Eventos', 'Jovens', 'Outros', 'Trabalhadores'],
+Eventos: ['Batismo', 'Dia das Mães', 'Dia do Pastor', 'Dia dos Pais', 'Outros'],
+Manutenção: ['Descartáveis', 'Limpeza', 'Outros', 'Papelaria', 'Utilidades'],
+Missões: ['Igreja', 'Outros', 'Pessoal', 'Projeto', 'Sustento'],
+Obras: ['Construção', 'Ferramentas', 'Material', 'Outros', 'Reforma', 'Reparos', 'Serviço', 'Outros'],
+Outros: ['Outros'],
+Pagamentos: ['Aluguel', 'Impostos', 'Outros', 'Salário', 'Taxas'],
+Serviços: ['Contabilidade', 'Energia', 'Gás', 'Impressão', 'Outros', 'Água', 'Água Mineral'],
+Transporte: ['Combustível', 'Manutenção', 'Outros', 'Taxi', 'Passagem'],
 }
 
 Classifique as entradas no texto abaixo analisando as colunas Descrição e Observações e me devolva com as colunas Categoria e Subcategoria de cada entrada devidamente preenchidas. Me forneça apenas a saída, em formato csv, sem a necessidade de explicações adicionais.
@@ -58,11 +58,9 @@ Garrafão de água mineral,40,31/07/2024,Outros,Outros,Cora,,** @import ?? ** 5 
 Combustível para missões na Serra,70,30/07/2024,Outros,Outros,Cora,,** @import ?? #reembolso @FatimaLima ** 2 viagens
 Presente de aniverário do pastor,289.9,30/07/2024,Outros,Outros,Cora,,"** @import ?? #reembolso @GleisianeMuniz ** "
 
--->
-
 <!-- ATUALIZAR -->
 
-1 - Baixar o extrato da caixa atualizado, (upload para o drive) colocar na pasta referente ao mês e conferir o resumo (06 CAIXA: JUNHO.pdf)
+<!-- 1 - Baixar o extrato da caixa atualizado, (upload para o drive) colocar na pasta referente ao mês e conferir o resumo (06 CAIXA: JUNHO.pdf)
 2 - Baixar os comprovantes e extrair detalhes ou recuperar do site da caixa > imports/<ano>/<MES>\_<DESP|RECE>\_IMPORT.csv
 3 - Baixar csv e pdf do banco cora no email para a pasta /cora dentro de note-to-text/notas/<ano>/<MES>/cora
 4 - Parsear os dados do csv cora com a opção 10 no script de import (necessário o Node 14.18.1)
@@ -81,9 +79,9 @@ Presente de aniverário do pastor,289.9,30/07/2024,Outros,Outros,Cora,,"** @impo
 17 - Importar JSON no relatorio (_ Usando o script npm run merge)
 18 - Alterar o saldo anterior manualmente (aparentemente não é mais necessário)
 19 - Testar o relatorio localmente
-20 - Publicar e baixar o PDF (adicionar na pasta arquivo e enviar no whatsapp)
+20 - Publicar e baixar o PDF (adicionar na pasta arquivo e enviar no whatsapp) -->
 
-** Icluir banco cora
+<!-- ** Icluir banco cora
 ** Substituir efetivacao por pagamento durante a criação do json (done)
 ** Mudar encargos para valor numerico e negativo (done)
 ** Colocar a estrutura de diretorios direto dentro do drive para auto sync dos meses
@@ -222,4 +220,4 @@ Criar uma tela de autenticação só com senha que muda todo mês
 
 // const backup = /(!)|(&&)|(\|\|)|#([\w]+)|\(([\*|\w]+?)\)|\(([\*|\w]+?:[\*|\w]+?)\)|"(.+?)"/g
 // resolver os casos de oprador negação
-// resolver casos com prioridades
+// resolver casos com prioridades -->
