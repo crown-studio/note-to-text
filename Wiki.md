@@ -108,6 +108,8 @@ ok - Integrar o código do script da Caixa no cmd
 - Adicionar uma função de higienizar para fazer trim nas obserações e remover ?? da descrição
 - Juntar os dois repos com cli e front abrim no mesmo workspace integrando as funcionalidades do cli no front
 - verificar se o arquivo SET_RECE_IMPORT.csv existe antes de fazer o append, do contrário avisar
+- Remover cabecalho das colunas na opcao 13 do cmd
+- Exibir o mes no cmd
 
 Subpassos para automatizar no passo 5
 
