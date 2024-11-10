@@ -183,6 +183,12 @@ ok - Make the click to filter on item instead of badges
 
 ## Backlog (Frontend & CLI)
 
+- automatizar os fluxos de upload para o drive
+- usar o Finance CDM (note-to-text) dentro de uma pasta tools na raiz do finance-report para automatizar mais alguns passos
+- deixar a estrutura da caixa na pasta caixa assim como a do cora é na pasta corae deixar o progrma rodar a primeira vez generico sem fazer extraçao de dados apenas mostrar o menu e criar as pastas
+- criar a pasta de ano e mes caso nao exista quando redar a primeira vez
+- subir as pastas dos meses do note-to-text e mudar o nome do repositorio para Finance CMD
+- Protect branchs on repository
 - Show people info like church locale
 - Make the hook useData a context
 - Add a hover effect on custom badge button
@@ -217,11 +223,6 @@ ok - Make the click to filter on item instead of badges
 - criar um tema para cutomizar logo titulo, cores e seçoes a seu gosto, versão paga com direito a nuvem e sem propagandas
 - tudo configurável via toggle config, sem conta de usuário num primeiro momento, incluindo lista de membros.
 - Criar uma tela de autenticação só com senha que muda todo mês
-- automatizar os fluxos de upload para o drive
-- usar o Finance CDM (note-to-text) dentro de uma pasta tools na raiz do finance-report para automatizar mais alguns passos
-- deixar a estrutura da caixa na pasta caixa assim como a do cora é na pasta corae deixar o progrma rodar a primeira vez generico sem fazer extraçao de dados apenas mostrar o menu e criar as pastas
-- criar a pasta de ano e mes caso nao exista quando redar a primeira vez
-- subir as pastas dos meses do note-to-text e mudar o nome do repositorio para Finance CMD
 
 ## INFOS
 
