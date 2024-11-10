@@ -187,7 +187,8 @@ ok - Make the click to filter on item instead of badges
 - usar o Finance CDM (note-to-text) dentro de uma pasta tools na raiz do finance-report para automatizar mais alguns passos
 - deixar a estrutura da caixa na pasta caixa assim como a do cora é na pasta corae deixar o progrma rodar a primeira vez generico sem fazer extraçao de dados apenas mostrar o menu e criar as pastas
 - criar a pasta de ano e mes caso nao exista quando redar a primeira vez
-- subir as pastas dos meses do note-to-text e mudar o nome do repositorio para Finance CMD
+- subir as pastas dos meses do note-to-text e baixar as do arley
+- mudar o nome do repositorio para Finance CLI atualizar a documentação
 - Protect branchs on repository
 - Show people info like church locale
 - Make the hook useData a context
