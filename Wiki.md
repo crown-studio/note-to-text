@@ -57,7 +57,7 @@ Garrafão de água mineral,40,31/07/2024,Outros,Outros,Cora,,** @import ?? ** 5 
 Combustível para missões na Serra,70,30/07/2024,Outros,Outros,Cora,,** @import ?? #reembolso @FatimaLima ** 2 viagens
 Presente de aniverário do pastor,289.9,30/07/2024,Outros,Outros,Cora,,"** @import ?? #reembolso @GleisianeMuniz ** "
 
-<!-- ATUALIZAR -->
+<!-- Passo a passo (DEPRECATED) -->
 
 <!-- 1 - Baixar o extrato da caixa atualizado, (upload para o drive) colocar na pasta referente ao mês e conferir o resumo (06 CAIXA: JUNHO.pdf)
 2 - Baixar os comprovantes e extrair detalhes ou recuperar do site da caixa > imports/<ano>/<MES>\_<DESP|RECE>\_IMPORT.csv
@@ -78,36 +78,7 @@ Presente de aniverário do pastor,289.9,30/07/2024,Outros,Outros,Cora,,"** @impo
 17 - Importar JSON no relatorio (_ Usando o script npm run merge)
 18 - Alterar o saldo anterior manualmente (aparentemente não é mais necessário)
 19 - Testar o relatorio localmente
-20 - Publicar e baixar o PDF (adicionar na pasta arquivo e enviar no whatsapp) -->
-
-<!-- ** Icluir banco cora
-** Substituir efetivacao por pagamento durante a criação do json (done)
-** Mudar encargos para valor numerico e negativo (done)
-** Colocar a estrutura de diretorios direto dentro do drive para auto sync dos meses
-** Automatizar atualizações em tempo real entre o app e o relatório
-** Atualizar o script generate para lidar com varios anos com pastas por anos ou o ano no nome do arquivo
-** Criar a possibilidade de realizar append e não fazer merge de tudo novamente
-** Resolver o problema das barras cortando lá no "\ quando adiciona virgula no csv
-** Usar um remote para passar o slide
-** No parse dos dados do Cora pegar o identificador com base em, se for receita pega o DE e se for despesa o PARA
-
-TODOs BACKEND
-
-ok - Integrar o código do script da Caixa no cmd
-
-- Fazer a opção 10 escrever o arquivo em um path e não apenas copiar
-- Script para recuperar dados de mensagens pix no Cora
-- Copiar o prompt de adicionar categorias por meio de um script no cli
-- manter dados da pasta notas no repositório
-- ajustar o cli para não quebrar quando não tiver relatório da Caixa (criar um fluxo de erro handle no extrair dos dados ou apenas validar o arquivo antes de extrair, incluir os outros processos na extração inicial como o banco cora e criar os imports).
-- Adicionar o step by step no Tesouraria CMD
-- Fazer o número 8 no script copiar o comando de append com nome do arquivo
-- Adicionar uma função de higienizar para fazer trim nas obserações e remover ?? da descrição
-- Juntar os dois repos com cli e front abrim no mesmo workspace integrando as funcionalidades do cli no front
-- verificar se o arquivo SET_RECE_IMPORT.csv existe antes de fazer o append, do contrário avisar
-- Remover cabecalho das colunas na opcao 13 do cmd
-- Exibir o mes no cmd
-- ajustar a regex que pega os dados no PDF da caixa
+20 - Publicar e baixar o PDF (adicionar na pasta arquivo e enviar no whatsapp)
 
 Subpassos para automatizar no passo 5
 
@@ -129,11 +100,38 @@ ok - Remover informação desnecessária das observações
 ok - verificar se deve receber alguma tag especial ex: #banabuiu
 ok - Adicionar ?? em caso de pendencias ou esclarecimentos
 
-INFOS
+-->
 
-// /\((.\*?)\)/g // pega qualque coisa dentro de parenteses
+** Icluir banco cora
+** Substituir efetivacao por pagamento durante a criação do json (done)
+** Mudar encargos para valor numerico e negativo (done)
+** Colocar a estrutura de diretorios direto dentro do drive para auto sync dos meses
+** Automatizar atualizações em tempo real entre o app e o relatório
+** Atualizar o script generate para lidar com varios anos com pastas por anos ou o ano no nome do arquivo
+** Criar a possibilidade de realizar append e não fazer merge de tudo novamente
+** Resolver o problema das barras cortando lá no "\ quando adiciona virgula no csv
+** Usar um remote para passar o slide
+** No parse dos dados do Cora pegar o identificador com base em, se for receita pega o DE e se for despesa o PARA
 
-TODOs
+## TODOs (Backend | CLI)
+
+ok - Integrar o código do script da Caixa no cmd
+
+- Fazer a opção 10 escrever o arquivo em um path e não apenas copiar
+- Script para recuperar dados de mensagens pix no Cora
+- Copiar o prompt de adicionar categorias por meio de um script no cli
+- manter dados da pasta notas no repositório
+- ajustar o cli para não quebrar quando não tiver relatório da Caixa (criar um fluxo de erro handle no extrair dos dados ou apenas validar o arquivo antes de extrair, incluir os outros processos na extração inicial como o banco cora e criar os imports).
+- Adicionar o step by step no Tesouraria CMD
+- Fazer o número 8 no script copiar o comando de append com nome do arquivo
+- Adicionar uma função de higienizar para fazer trim nas obserações e remover ?? da descrição
+- Juntar os dois repos com cli e front abrim no mesmo workspace integrando as funcionalidades do cli no front
+- verificar se o arquivo SET_RECE_IMPORT.csv existe antes de fazer o append, do contrário avisar
+- Remover cabecalho das colunas na opcao 13 do cmd
+- Exibir o mes no cmd
+- ajustar a regex que pega os dados no PDF da caixa
+
+## TODOs (Frontend)
 
 ok - Bug for key prop on entries list containers render (maybe has duplicate id)
 ok - Improve the style for button group
@@ -183,7 +181,7 @@ ok - Make the click to filter on item instead of badges
 - Add total tithes percentage on summary result
 - Bug when i set the resume view and click on subcategory the app has not a correct filter applied
 
----
+## Backlog (Frontend & CLI)
 
 - Show people info like church locale
 - Make the hook useData a context
@@ -209,20 +207,23 @@ ok - Make the click to filter on item instead of badges
 - Add a filter by range interval no just a month
 - Make the hook useEventListener receive the function or selector that use to
   get element on useEffect moment
+- resolver os casos de oprador negação
+- resolver casos com prioridades
 
-# Ideias
+# Ideas
 
-Tornar esse apenas um relatorio para igrejas de modo que as pessoas possam usar fácil e seja generico o suficiente
-como importar os dados via file e gravar no db online, adiconar adds para monetizar, permitir que as igrejas possam
-criar um tema para cutomizar logo titulo, cores e seçoes a seu gosto, versão paga com direito a nuvem e sem propagandas
-tudo configurável via toggle config, sem conta de usuário num primeiro momento, incluindo lista de membros.
-Criar uma tela de autenticação só com senha que muda todo mês
-automatizar os fluxos de upload para o drive
-usar o Finance CDM (note-to-text) dentro de uma pasta tools na raiz do finance-report para automatizar mais alguns passos
-deixar a estrutura da caixa na pasta caixa assim como a do cora é na pasta corae deixar o progrma rodar a primeira vez generico sem fazer extraçao de dados apenas mostrar o menu e criar as pastas
-criar a pasta de ano e mes caso nao exista quando redar a primeira vez
-subir as pastas do meses do note-to-text e mudar o nome do repositorio para Finance CMD
+- Tornar esse apenas um relatorio para igrejas de modo que as pessoas possam usar fácil e seja generico o suficiente
+- como importar os dados via file e gravar no db online, adiconar adds para monetizar, permitir que as igrejas possam
+- criar um tema para cutomizar logo titulo, cores e seçoes a seu gosto, versão paga com direito a nuvem e sem propagandas
+- tudo configurável via toggle config, sem conta de usuário num primeiro momento, incluindo lista de membros.
+- Criar uma tela de autenticação só com senha que muda todo mês
+- automatizar os fluxos de upload para o drive
+- usar o Finance CDM (note-to-text) dentro de uma pasta tools na raiz do finance-report para automatizar mais alguns passos
+- deixar a estrutura da caixa na pasta caixa assim como a do cora é na pasta corae deixar o progrma rodar a primeira vez generico sem fazer extraçao de dados apenas mostrar o menu e criar as pastas
+- criar a pasta de ano e mes caso nao exista quando redar a primeira vez
+- subir as pastas dos meses do note-to-text e mudar o nome do repositorio para Finance CMD
 
-// const backup = /(!)|(&&)|(\|\|)|#([\w]+)|\(([\*|\w]+?)\)|\(([\*|\w]+?:[\*|\w]+?)\)|"(.+?)"/g
-// resolver os casos de oprador negação
-// resolver casos com prioridades -->
+## INFOS
+
+`// /\((.\*?)\)/g // pega qualque coisa dentro de parenteses`
+`// const backup = /(!)|(&&)|(\|\|)|#([\w]+)|\(([\*|\w]+?)\)|\(([\*|\w]+?:[\*|\w]+?)\)|"(.+?)"/g`
