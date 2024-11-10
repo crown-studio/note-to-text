@@ -102,21 +102,17 @@ ok - Adicionar ?? em caso de pendencias ou esclarecimentos
 
 -->
 
-** Icluir banco cora
-** Substituir efetivacao por pagamento durante a criação do json (done)
-** Mudar encargos para valor numerico e negativo (done)
-** Colocar a estrutura de diretorios direto dentro do drive para auto sync dos meses
-** Automatizar atualizações em tempo real entre o app e o relatório
-** Atualizar o script generate para lidar com varios anos com pastas por anos ou o ano no nome do arquivo
-** Criar a possibilidade de realizar append e não fazer merge de tudo novamente
-** Resolver o problema das barras cortando lá no "\ quando adiciona virgula no csv
-** Usar um remote para passar o slide
-** No parse dos dados do Cora pegar o identificador com base em, se for receita pega o DE e se for despesa o PARA
-
 ## TODOs (Backend | CLI)
 
+ok - Criar a possibilidade de realizar append e não fazer merge de tudo novamente
+ok - Substituir efetivacao por pagamento durante a criação do json
+ok - Mudar encargos para valor numerico e negativo
+ok - Icluir banco cora
 ok - Integrar o código do script da Caixa no cmd
 
+- Automatizar atualizações em tempo real entre o app e o relatório
+- Atualizar o script generate para lidar com varios anos com pastas por anos ou o ano no nome do arquivo
+- Resolver o problema das barras cortando lá no "\ quando adiciona virgula no csv
 - Fazer a opção 10 escrever o arquivo em um path e não apenas copiar
 - Script para recuperar dados de mensagens pix no Cora
 - Copiar o prompt de adicionar categorias por meio de um script no cli
@@ -130,6 +126,7 @@ ok - Integrar o código do script da Caixa no cmd
 - Remover cabecalho das colunas na opcao 13 do cmd
 - Exibir o mes no cmd
 - ajustar a regex que pega os dados no PDF da caixa
+- No parse dos dados do Cora pegar o identificador com base em, se for receita pega o DE e se for despesa o PARA
 
 ## TODOs (Frontend)
 
@@ -224,6 +221,8 @@ ok - Make the click to filter on item instead of badges
 - criar um tema para cutomizar logo titulo, cores e seçoes a seu gosto, versão paga com direito a nuvem e sem propagandas
 - tudo configurável via toggle config, sem conta de usuário num primeiro momento, incluindo lista de membros.
 - Criar uma tela de autenticação só com senha que muda todo mês
+- Usar um remote para passar o slide
+- Colocar a estrutura de diretorios direto dentro do drive para auto sync dos meses
 
 ## INFOS
 
