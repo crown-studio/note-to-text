@@ -177,6 +177,7 @@ ok - Make the click to filter on item instead of badges
 - Add a list of users on application
 - Add total tithes percentage on summary result
 - Bug when i set the resume view and click on subcategory the app has not a correct filter applied
+- Função para editar linhas direto no relatório, manter backup ou sobreescrever no json
 
 ## Backlog (Frontend & CLI)
 
