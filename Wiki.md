@@ -1,24 +1,23 @@
 <!-- Etapas do processo -->
 
-Parei o relatório de Agosto no passo 2.4
-
 1. Preparação
-   - Baixar csv e pdf do banco cora no email para a pasta /cora dentro de note-to-text/notas/<ano>/<MES>/cora
-   - Exportar o extrato em pdf do app da Caixa Econômica para o Google Drive na pasta Extratos, com o formato 08 CAIXA: AGOSTO.pdf e para adicionar na pasta note-to-text/notas/<ano>/<MES>
+   - Baixar csv e pdf do banco cora no email para a pasta /cora dentro de note-to-text/notas/_ano_/_MES_/cora
+   - Exportar o extrato em pdf do app da Caixa Econômica para o Google Drive na pasta Extratos, com o formato 08 CAIXA: AGOSTO.pdf e para adicionar na pasta note-to-text/notas/_ano_/_MES_
    - Executar o Tesouraria CMD e parsear os dados do csv cora com a opção 10 do menu e parse da caixa com a opção 13 (necessário o Node 14.18.1)
-   - Inserir dados do caixa Carteira manualmente no arquivo de import em note-to-text/notas/<ano>/<MES>/imports
+   - Inserir dados do caixa Carteira manualmente no arquivo de import em note-to-text/notas/_ano_/_MES_/imports
 2. Preenchimento
    - Preparar CSVs de import dos caixas usando o Edit csv no vscode
    - Receitas: Ajustar nomes, juntar casais e ajustar categorias e subcategorias
    - Despesas: Remover as despesas fixas e registrar no app descrição, observações, categorias e tags
    - Usar a IA para adicionar as categorias nas despesas com o prompt em anexo
+   - Fazer Trim na tabela toda ao concluir o processo
 3. Importação
-   - Subir os arquivos csv de /imports para o drive na pasta Tesouraria/Arquivos/<ano>/imports/<MES>
+   - Subir os arquivos csv de /imports para o drive na pasta Tesouraria/Arquivos/_ano_/imports/_MES_
    - Importar dados no app my finances usando a opção Side Menu > Ferramentas > Importar CSV
    - Conferir se o valor do caixa bateu (adicionar juros e corrigir transações entre contas)
-   - Exportar as receitas e despesas do app como csv usando a opção Relatórios e salvar no drive na pasta /Tesouraria/Arquivos/<ano>/Relatórios/<00 MES>
+   - Exportar as receitas e despesas do app como csv usando a opção Relatórios e salvar no drive na pasta /Tesouraria/Arquivos/_ano_/Relatórios/<00 MES>
 4. Publicação
-   - Baixar os arquivos receitas e despesas .csv e colocar na pasta /note-to-text/notas/<ano>/<MES>/
+   - Baixar os arquivos receitas e despesas .csv e colocar na pasta /note-to-text/notas/_ano_/_MES_/
    - Converter os arquivos receitas e despesas .csv para JSON usando a opção (8 CSV to JSON) no Tesouraria CMD e adicionar o \_2024
    - Importar o arquivo JSON do mês para o database do relatorio usando o script `npm run append dd_MMM_yyyy` no `/finance-report`
    - Testar o relatorio localmente `npm start`, publicar no github pages usando `npm run deploy`.
@@ -108,6 +107,7 @@ ok - Integrar o código do script da Caixa no cmd
 - verificar se o arquivo SET_RECE_IMPORT.csv existe antes de fazer o append, do contrário avisar
 - Remover cabecalho das colunas na opcao 13 do cmd
 - Exibir o mes no cmd
+- ajustar a regex que pega os dados no PDF da caixa
 
 Subpassos para automatizar no passo 5
 
@@ -217,6 +217,11 @@ como importar os dados via file e gravar no db online, adiconar adds para moneti
 criar um tema para cutomizar logo titulo, cores e seçoes a seu gosto, versão paga com direito a nuvem e sem propagandas
 tudo configurável via toggle config, sem conta de usuário num primeiro momento, incluindo lista de membros.
 Criar uma tela de autenticação só com senha que muda todo mês
+automatizar os fluxos de upload para o drive
+usar o Finance CDM (note-to-text) dentro de uma pasta tools na raiz do finance-report para automatizar mais alguns passos
+deixar a estrutura da caixa na pasta caixa assim como a do cora é na pasta corae deixar o progrma rodar a primeira vez generico sem fazer extraçao de dados apenas mostrar o menu e criar as pastas
+criar a pasta de ano e mes caso nao exista quando redar a primeira vez
+subir as pastas do meses do note-to-text e mudar o nome do repositorio para Finance CMD
 
 // const backup = /(!)|(&&)|(\|\|)|#([\w]+)|\(([\*|\w]+?)\)|\(([\*|\w]+?:[\*|\w]+?)\)|"(.+?)"/g
 // resolver os casos de oprador negação
